@@ -1312,14 +1312,12 @@ document.addEventListener('DOMContentLoaded',()=>{
 /* ══ CLOUD SYNC (JSONBin.io) ══ */
 const SYNC_KEY = 'co_sync_cfg';
 // Credenciais de sync embutidas — todos os dispositivos sincronizam automaticamente
-let syncCfg = {apiKey:'',binId:''};
+let syncCfg = {apiKey:'$2a$10$QfUvT3FSk8vofykfoeH7cupg4JsCn5R8pXxw60FBjmgOs67xknCm2',binId:'6a3d8af6da38895dfeff5b85'};
 let syncInterval = null;
 
 function loadSyncCfg(){
-  try{
-    const r=localStorage.getItem(SYNC_KEY);
-    if(r){const s=JSON.parse(r);if(s.apiKey&&s.binId)syncCfg=s;}
-  }catch(e){}
+  // Always clear old config - use hardcoded credentials only
+  localStorage.removeItem(SYNC_KEY);
   updateSyncDot();
 }
 function updateSyncDot(){
