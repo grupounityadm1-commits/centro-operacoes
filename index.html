@@ -612,7 +612,7 @@ function save(){
     localStorage.setItem(SK, JSON.stringify(data));
     const si=document.getElementById('save-ind');
     if(si){si.style.display='';clearTimeout(si._t);si._t=setTimeout(()=>si.style.display='none',2000);}
-    if(syncReady()) syncToCloud(false);
+    if(syncReady()) scheduleSyncToCloud();
   }catch(e){
     console.error('Erro ao salvar dados:', e);
     toast('Erro ao salvar','err');
@@ -680,6 +680,10 @@ function doLogin(){if(!loginRole){toast('Selecione um perfil','err');return;}con
   if(syncReady()){
     // Pull from cloud FIRST — only push if local data is newer
     syncFromCloud(false).then(()=>{
+      // If still no data after pull, retry once after 3s (handles slow networks)
+      if(!wpps.length && !devs.length){
+        setTimeout(()=>syncFromCloud(false), 3000);
+      }
       startSyncInterval();
     });
   } else {
@@ -1306,8 +1310,8 @@ document.addEventListener('DOMContentLoaded',()=>{
 const SYNC_KEY = 'co_sync_cfg';
 // Credenciais de sync embutidas — todos os dispositivos sincronizam automaticamente
 let syncCfg = {
-  apiKey: '$2a$10$v9Jjs.ebJbjJWo91W1/0YeKBWAOocMa.m625go4e3dZkjVelKIv0y',
-  binId:  '6a2871f1f5f4af5e29d42648'
+  apiKey: '$2a$10$QfUvT3FSk8vofykfoeH7cupg4JsCn5R8pXxw60FBjmgOs67xknCm2',
+  binId:  '6a3d8af6da38895dfeff5b85'
 };
 let syncInterval = null;
 
@@ -1355,6 +1359,12 @@ function showSyncStatus(msg,type){
   el.textContent=msg;
 }
 function syncReady(){return syncCfg.apiKey&&syncCfg.binId;}
+
+let _syncTimer = null;
+function scheduleSyncToCloud(){
+  clearTimeout(_syncTimer);
+  _syncTimer = setTimeout(()=> syncToCloud(false), 1500);
+}
 
 async function syncToCloud(manual){
   if(!syncReady()) return;
@@ -1420,7 +1430,9 @@ async function syncFromCloud(manual){
       headers:{'X-Master-Key':syncCfg.apiKey,'X-Bin-Meta':'false'}
     });
     if(r.ok){
-      const s = await r.json();
+      let s = await r.json();
+      // JSONBin sometimes wraps response in {record:{...}} - handle both formats
+      if(s && s.record) s = s.record;
       if(s && s.wpps !== undefined){
         const changed = applyCloudData(s);
         if(manual) showSyncStatus('✓ Sincronizado'+(changed?' — atualizado':' — sem mudanças')+' às '+new Date().toLocaleTimeString('pt-BR'),'ok');
@@ -1432,6 +1444,7 @@ async function syncFromCloud(manual){
     }
   }catch(e){
     if(manual) showSyncStatus('Erro: '+e.message,'err');
+    else console.warn('Sync error:', e.message);
   }
 }
 
@@ -1441,7 +1454,7 @@ function startSyncInterval(){
   // sync from cloud every 30 seconds
   syncInterval=setInterval(async ()=>{
     if(currentRole) await syncFromCloud(false);
-  },8000);
+  },6000);
 }
 
 // sync happens via syncToCloud called directly after save()
