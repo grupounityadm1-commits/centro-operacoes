@@ -278,6 +278,25 @@ body.gestao .gestao-hidden{display:none!important}
   </div>
 </div>
 
+
+<!-- DEV CONFIG MODAL -->
+<div class="modal-bg" id="dev-modal-cfg">
+  <div class="modal" style="max-width:440px">
+    <div class="mhd">
+      <h3>⚙️ Configurações do Desenvolvedor</h3>
+      <button class="mc-btn" onclick="closeM('dev-modal-cfg')">✕</button>
+    </div>
+    <div style="background:#dcfce7;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
+      <span style="font-size:16px">☁️</span>
+      <div><div style="font-size:13px;font-weight:700;color:#15803d">Sincronização ativa</div>
+      <div style="font-size:11px;color:#166534">Atualiza automaticamente a cada 6 segundos</div></div>
+    </div>
+    <button class="btn bbl" style="width:100%;justify-content:center;margin-bottom:8px" onclick="syncFromCloud(true)">↓ Buscar atualizações agora</button>
+    <button class="btn bgh" style="width:100%;justify-content:center" onclick="syncToCloud(true)">↑ Forçar envio dos dados locais</button>
+    <div id="sync-status" style="font-size:12px;margin-top:10px;padding:8px 12px;border-radius:8px;display:none"></div>
+  </div>
+</div>
+
 <!-- RECHARGE MODAL -->
 <div class="modal-bg" id="rech-modal">
   <div class="modal" style="max-width:360px">
@@ -289,26 +308,6 @@ body.gestao .gestao-hidden{display:none!important}
   </div>
 </div>
 
-
-<!-- DEV CONFIG MODAL -->
-<div class="modal-bg" id="dev-modal-cfg">
-  <div class="modal" style="max-width:440px">
-    <div class="mhd">
-      <h3>⚙️ Configurações do Desenvolvedor</h3>
-      <button class="mc-btn" onclick="closeM('dev-modal-cfg')">✕</button>
-    </div>
-    <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px">☁️ Sincronização entre dispositivos</div>
-    <div style="font-size:12px;color:var(--mut);margin-bottom:14px">Todos os dispositivos compartilham os mesmos dados em tempo real via JSONBin.io (gratuito).</div>
-    <div class="fg"><label class="fl">JSONBin API Key</label><input class="fi" id="sync-key" placeholder="$2a$10$..." style="font-family:monospace;font-size:12px"></div>
-    <div class="fg"><label class="fl">Bin ID</label><input class="fi" id="sync-bin" placeholder="6a2871f1f5f4af5e29d42648" style="font-family:monospace"></div>
-    <div style="display:flex;gap:8px;margin-top:4px">
-      <button class="btn bbl" style="flex:1;justify-content:center" onclick="saveSyncConfig()">✓ Ativar sincronização</button>
-      <button class="btn bgh" onclick="syncToCloud(true)">↑ Forçar envio</button>
-    </div>
-    <div style="font-size:11px;color:var(--mut);margin-top:8px">Após ativar, sincroniza automaticamente a cada 30 segundos.</div>
-    <div id="sync-status" style="font-size:12px;margin-top:10px;padding:8px 12px;border-radius:8px;display:none"></div>
-  </div>
-</div>
 
 
 <!-- TRANSFER MODAL (bulk - on agent delete) -->
@@ -440,11 +439,6 @@ body.gestao .gestao-hidden{display:none!important}
       <button class="nb edit-only" data-s="settings" onclick="nav('settings',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="nlbl">Configurações</span></button>
     </nav>
     <div class="sb-ft">
-      <button onclick="openDevConfig()" style="display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-bottom:4px;border:none;background:rgba(255,255,255,.04);color:rgba(255,255,255,.3);border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.color='rgba(255,255,255,.7)'" onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.color='rgba(255,255,255,.3)'">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
-        <span>Config. desenvolvedor</span>
-        <span id="sync-dot" style="width:6px;height:6px;border-radius:50%;background:#94a3b8;flex-shrink:0;margin-left:auto"></span>
-      </button>
       <div class="urow"><div class="uav" id="u-av">?</div><div class="unm"><strong id="u-nm">—</strong><span id="u-rl">—</span></div></div><button class="lout" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sair</span></button></div>
   </aside>
   <div class="mw">
@@ -1305,6 +1299,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Auto-save a cada 60 segundos e antes de fechar
   setInterval(()=>{ if(currentRole) save(); }, 60000);
   window.addEventListener('beforeunload', ()=>{ if(currentRole) save(); });
+  // Sync credentials hardcoded - no config needed
   loadSyncCfg();
   startSyncInterval();
 });
@@ -1315,45 +1310,56 @@ const SYNC_KEY = 'co_sync_cfg';
 let syncCfg = {apiKey:'$2a$10$QfUvT3FSk8vofykfoeH7cupg4JsCn5R8pXxw60FBjmgOs67xknCm2',binId:'6a3d8af6da38895dfeff5b85'};
 let syncInterval = null;
 
+function syncReady(){return !!(syncCfg.apiKey&&syncCfg.binId);}
+function updateSyncDot(){}
+
+
+/* ══ SYNC CONFIG ══ */
+const SYNC_CFG_VERSION = 'v3'; // bump this when credentials change to auto-clear old config
+
 function loadSyncCfg(){
-  // Always clear old config - use hardcoded credentials only
+  // Credentials are hardcoded — clear any stale localStorage config
   localStorage.removeItem(SYNC_KEY);
   updateSyncDot();
 }
-function updateSyncDot(){
-  const dot=document.getElementById('sync-dot');
-  if(dot) dot.style.background = syncReady() ? '#22d3ee' : '#94a3b8';
-}
-function openDevConfig(){
-  const sk=document.getElementById('sync-key'); if(sk) sk.value=syncCfg.apiKey||'';
-  const sb=document.getElementById('sync-bin'); if(sb) sb.value=syncCfg.binId||'';
-  if(syncReady()){
-    const sc=document.getElementById('sync-status');
-    if(sc){sc.style.display='block';sc.style.background='#dcfce7';sc.style.color='#15803d';sc.textContent='☁️ Sincronização ativa — atualiza a cada 30s';}
-  }
-  openM('dev-modal-cfg');
-}
+
 function saveSyncConfig(){
-  const key=document.getElementById('sync-key').value.trim();
-  const bin=document.getElementById('sync-bin').value.trim();
-  if(!key||!bin){showSyncStatus('Preencha a API Key e o Bin ID','err');return;}
-  syncCfg={apiKey:key,binId:bin};
-  localStorage.setItem(SYNC_KEY,JSON.stringify(syncCfg));
+  const key = document.getElementById('sync-key').value.trim();
+  const bin = document.getElementById('sync-bin').value.trim();
+  if(!key||!bin){showSyncStatus('Preencha os dois campos','err');return;}
+  syncCfg = {apiKey:key, binId:bin};
+  localStorage.setItem(SYNC_KEY, JSON.stringify({apiKey:key, binId:bin, version:SYNC_CFG_VERSION}));
   updateSyncDot();
-  showSyncStatus('Configuração salva! Testando conexão...','info');
+  showSyncStatus('✓ Configuração salva! Testando conexão...','info');
   syncFromCloud(true);
   startSyncInterval();
 }
-function showSyncStatus(msg,type){
-  const el=document.getElementById('sync-status');
-  if(!el)return;
-  el.style.display='block';
-  el.style.background=type==='ok'?'#dcfce7':type==='err'?'#fee2e2':'#dbeafe';
-  el.style.color=type==='ok'?'#15803d':type==='err'?'#b91c1c':'#1e40af';
-  el.textContent=msg;
-}
-function syncReady(){return syncCfg.apiKey&&syncCfg.binId;}
 
+function showSyncStatus(msg,type){
+  const el = document.getElementById('sync-status'); if(!el)return;
+  el.style.display='block';
+  el.style.background = type==='ok'?'#dcfce7':type==='err'?'#fee2e2':'#dbeafe';
+  el.style.color = type==='ok'?'#15803d':type==='err'?'#b91c1c':'#1e40af';
+  el.textContent = msg;
+}
+
+function updateSyncDot(){}
+
+function openDevConfig(){
+  const sk = document.getElementById('sync-key'); if(sk) sk.value = syncCfg.apiKey||'';
+  const sb = document.getElementById('sync-bin'); if(sb) sb.value = syncCfg.binId||'';
+  const st = document.getElementById('sync-status');
+  if(st){
+    if(syncReady()){
+      st.style.display='block';st.style.background='#dcfce7';st.style.color='#15803d';
+      st.textContent='☁️ Sincronização ativa — atualiza a cada 6s';
+    } else {
+      st.style.display='block';st.style.background='#fef3c7';st.style.color='#92400e';
+      st.textContent='⚠️ Sem configuração — cole a API Key e Bin ID';
+    }
+  }
+  openM('dev-modal-cfg');
+}
 let _syncTimer = null;
 function scheduleSyncToCloud(){
   clearTimeout(_syncTimer);
