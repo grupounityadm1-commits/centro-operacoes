@@ -1,0 +1,1562 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Centro de Operações | WPP</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--navy:#07101f;--navy2:#0f1f3d;--blue:#2563eb;--sky:#0ea5e9;--grn:#16a34a;--ylw:#ca8a04;--red:#dc2626;--org:#ea580c;--bg:#f4f6fb;--card:#fff;--bdr:#e2e8f2;--txt:#0f172a;--mut:#64748b;--sub:#94a3b8;--sw:224px;--r:14px;--rs:9px;--rp:999px;}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;min-height:100vh}
+button{font-family:inherit;cursor:pointer}input,select,textarea{font-family:inherit}a{text-decoration:none}
+/* LOGIN */
+.lp{min-height:100vh;background:var(--navy);display:flex;align-items:center;justify-content:center;padding:20px}
+.lcard{background:#fff;border-radius:20px;padding:36px 32px;width:100%;max-width:380px;box-shadow:0 24px 60px rgba(0,0,0,.4)}
+.llogo{width:50px;height:50px;border-radius:14px;background:linear-gradient(135deg,var(--blue),var(--sky));display:flex;align-items:center;justify-content:center;margin:0 auto 18px}
+.llogo svg{width:22px;height:22px}
+.lhd{text-align:center;margin-bottom:22px}.lhd h2{font-size:21px;font-weight:800;color:var(--navy)}.lhd p{font-size:13px;color:var(--mut);margin-top:4px}
+.role-row{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:16px}
+.ropt{padding:13px 10px;border:2px solid var(--bdr);border-radius:12px;cursor:pointer;text-align:center;transition:all .15s;user-select:none}
+.ropt:hover{border-color:#93c5fd}.ropt.on{border-color:var(--blue);background:#eff6ff}
+.ropt svg{display:block;margin:0 auto 6px;width:20px;height:20px;color:var(--mut)}.ropt.on svg{color:var(--blue)}
+.ropt strong{font-size:13px;font-weight:700;color:var(--txt);display:block}.ropt span{font-size:11px;color:var(--mut);display:block;margin-top:1px}
+.lhint{font-size:11px;color:var(--sub);text-align:center;min-height:16px;margin-bottom:10px}
+.lfl{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);display:block;margin-bottom:5px}
+.lfi{width:100%;padding:10px 13px;border:1.5px solid var(--bdr);border-radius:10px;background:#f8fafc;color:var(--txt);font-size:14px;font-weight:500;outline:none;transition:border-color .15s}
+.lfi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fff}
+.lbtn{width:100%;padding:12px;border:none;border-radius:11px;background:var(--navy);color:#fff;font-size:14px;font-weight:800;cursor:pointer;margin-top:10px;transition:all .15s}
+.lbtn:hover{background:var(--navy2);transform:translateY(-1px)}
+.agent-lnk{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:16px;padding-top:16px;border-top:1px solid var(--bdr);font-size:12.5px;font-weight:600;color:var(--mut)}
+.agent-lnk:hover{color:var(--blue)}
+/* APP SHELL */
+.app{display:none;min-height:100vh}.app.on{display:flex}
+.sb{width:var(--sw);background:var(--navy);position:fixed;top:0;left:0;height:100vh;display:flex;flex-direction:column;z-index:200;overflow:hidden}
+.sb-hd{padding:18px 14px 14px;display:flex;align-items:center;gap:11px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.sb-mk{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,var(--blue),var(--sky));display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-mk svg{width:19px;height:19px}
+.sb-tx strong{display:block;font-size:13px;font-weight:800;color:#fff}.sb-tx span{font-size:10px;color:rgba(255,255,255,.35)}
+.sb-nav{flex:1;padding:10px 8px;overflow-y:auto;scrollbar-width:none}.sb-nav::-webkit-scrollbar{display:none}
+.ns{font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:rgba(255,255,255,.2);padding:10px 11px 4px}
+.nb{display:flex;align-items:center;gap:9px;width:100%;padding:9px 10px;border:none;background:transparent;color:rgba(255,255,255,.5);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;transition:all .15s;position:relative;white-space:nowrap;margin-bottom:1px}
+.nb:hover{background:rgba(255,255,255,.07);color:rgba(255,255,255,.9)}.nb.on{background:rgba(37,99,235,.22);color:#fff}
+.nb.on::before{content:'';position:absolute;left:0;top:22%;height:56%;width:3px;background:#22d3ee;border-radius:0 3px 3px 0}
+.nic{width:28px;height:28px;border-radius:7px;background:rgba(255,255,255,.08);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nic svg{width:14px;height:14px}.nb.on .nic{background:rgba(37,99,235,.4)}
+.nlbl{flex:1;text-align:left}.nbdg{font-size:10px;font-weight:800;background:var(--red);color:#fff;padding:2px 6px;border-radius:99px;flex-shrink:0}
+.sb-ft{padding:10px 8px;border-top:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.urow{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;background:rgba(255,255,255,.05)}
+.uav{width:28px;height:28px;border-radius:8px;background:linear-gradient(135deg,#1a3560,#2563eb);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:800;color:#fff;flex-shrink:0}
+.unm strong{font-size:12px;font-weight:700;color:#fff;display:block}.unm span{font-size:10px;color:rgba(255,255,255,.35)}
+.lout{display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-top:4px;border:none;background:rgba(255,255,255,.04);color:rgba(255,255,255,.3);border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;transition:all .15s}
+.lout:hover{background:rgba(220,38,38,.18);color:#fca5a5}
+.mw{margin-left:var(--sw);flex:1;display:flex;flex-direction:column;min-height:100vh}
+.topbar{position:sticky;top:0;z-index:100;background:rgba(244,246,251,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--bdr);height:58px;padding:0 22px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.tb-l{display:flex;align-items:center;gap:10px}.tb-l h2{font-size:17px;font-weight:800;color:var(--txt)}.tb-l p{font-size:12px;color:var(--mut);margin-top:1px}
+.tb-r{display:flex;align-items:center;gap:6px}
+.tbtn{display:flex;align-items:center;gap:5px;padding:6px 11px;border-radius:var(--rs);border:1px solid var(--bdr);background:var(--card);color:var(--txt);font-size:12px;font-weight:600;transition:all .15s;cursor:pointer}
+.tbtn:hover{border-color:#93c5fd;color:var(--blue)}.tbtn svg{width:13px;height:13px}
+.tbtn.pri{background:var(--blue);border-color:var(--blue);color:#fff}.tbtn.pri:hover{background:#1d4ed8}
+.ro-tag{font-size:11px;font-weight:700;padding:4px 9px;border-radius:var(--rp);background:#fef3c7;color:#92400e;border:1px solid #fde68a;display:none}
+.ttime{padding:6px 11px;border-radius:var(--rs);background:var(--card);border:1px solid var(--bdr);font-size:12px;font-weight:700;color:var(--mut);font-variant-numeric:tabular-nums}
+.mob-btn{display:none}
+.content{padding:20px 22px;flex:1}
+.screen{display:none}.screen.on{display:block}
+/* BADGES */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 8px;border-radius:var(--rp);font-size:11px;font-weight:700}
+.b-r{background:#fee2e2;color:#b91c1c}.b-y{background:#fef3c7;color:#92400e}.b-g{background:#dcfce7;color:#15803d}
+.b-b{background:#dbeafe;color:#1e40af}.b-m{background:#f1f5f9;color:#475569}.b-c{background:#cffafe;color:#164e63}
+.b-o{background:#ffedd5;color:#9a3412}.b-p{background:#ede9fe;color:#5b21b6}
+.pd{width:5px;height:5px;border-radius:50%;display:inline-block;background:currentColor;animation:pulse 1.8s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sdot{width:7px;height:7px;border-radius:50%;display:inline-block;flex-shrink:0;vertical-align:middle;margin-right:3px}
+.sd-on{background:#16a34a}.sd-ban{background:var(--red)}.sd-sup{background:#ca8a04}.sd-av{background:#2563eb}.sd-rc{background:var(--org)}.sd-rs{background:#0ea5e9}.sd-man{background:#94a3b8}
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:7px 13px;border:none;border-radius:var(--rs);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;transition:all .15s;white-space:nowrap}
+.btn svg{width:13px;height:13px;flex-shrink:0}
+.bp{background:var(--navy);color:#fff}.bp:hover{background:var(--navy2);transform:translateY(-1px)}
+.bbl{background:var(--blue);color:#fff}.bbl:hover{background:#1d4ed8;transform:translateY(-1px)}
+.bgh{background:var(--bg);color:var(--txt);border:1px solid var(--bdr)}.bgh:hover{background:#e8edf5}
+.bgr{background:#dcfce7;color:#15803d}.bgr:hover{background:#bbf7d0}
+.bdel{background:transparent;border:none;color:var(--sub);padding:5px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.bdel:hover{background:#fee2e2;color:var(--red)}.bdel svg{width:13px;height:13px}
+.bedit{background:transparent;border:none;color:var(--sub);padding:5px;border-radius:7px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s}
+.bedit:hover{background:#dbeafe;color:var(--blue)}.bedit svg{width:13px;height:13px}
+/* ROWS */
+.row{display:flex;align-items:center;gap:10px;padding:11px 14px;background:var(--card);border:1px solid var(--bdr);border-radius:11px;transition:border-color .15s}
+.row+.row{margin-top:7px}.row:hover{border-color:#93c5fd}
+.row.crit{border-color:#fecaca;background:#fff9f9}.row.warn{border-color:#fde68a;background:#fffdf4}
+.row-main{flex:1;min-width:0}.row-title{font-size:13.5px;font-weight:700;color:var(--txt);display:flex;align-items:center;gap:7px;flex-wrap:wrap}.row-sub{font-size:11.5px;color:var(--mut);margin-top:2px}
+.row-acts{display:flex;gap:6px;align-items:center;flex-shrink:0}
+/* SECTION PILLS */
+.sec-pills{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.sp{padding:8px 16px;border-radius:var(--rp);border:1.5px solid var(--bdr);background:var(--card);color:var(--mut);font-size:12.5px;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:6px}
+.sp:hover{border-color:#93c5fd;color:var(--blue)}.sp.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.sp-n{font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(0,0,0,.08)}.sp.on .sp-n{background:rgba(255,255,255,.2)}
+/* AGENT CARDS */
+.agent-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(152px,1fr));gap:10px}
+.acard{border:1.5px solid var(--bdr);border-radius:14px;padding:15px 13px;cursor:pointer;transition:all .15s;background:var(--card)}
+.acard:hover{border-color:#93c5fd;box-shadow:0 4px 14px rgba(37,99,235,.1);transform:translateY(-2px)}
+.acard.ok{border-left:3px solid var(--grn)}.acard.warn{border-left:3px solid #f59e0b}.acard.crit{border-left:3px solid var(--red);background:#fff9f9}
+.ac-av{width:38px;height:38px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;margin-bottom:10px}
+.a1{background:linear-gradient(135deg,#1d4ed8,#06b6d4)}.a2{background:linear-gradient(135deg,#7c3aed,#3b82f6)}.a3{background:linear-gradient(135deg,#059669,#10b981)}.a4{background:linear-gradient(135deg,#dc2626,#f97316)}.a5{background:linear-gradient(135deg,#0f1f3d,#1d4ed8)}.a6{background:linear-gradient(135deg,#d97706,#f59e0b)}
+.ac-nm{font-size:12.5px;font-weight:700;color:var(--txt);line-height:1.3;margin-bottom:5px}
+.ac-inf{font-size:11px;color:var(--mut);display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:6px}
+.ac-pips{display:flex;gap:3px}.pip{width:16px;height:4px;border-radius:3px}.pip.on{background:var(--grn)}.pip.need{background:#fecaca}
+/* SLIDE PANEL */
+.d-ovl{display:none;position:fixed;inset:0;background:rgba(7,16,31,.35);z-index:300}.d-ovl.on{display:block}
+.d-panel{position:fixed;top:0;right:-420px;width:400px;height:100vh;background:#fff;border-left:1px solid var(--bdr);box-shadow:-6px 0 30px rgba(0,0,0,.12);z-index:301;transition:right .3s cubic-bezier(.16,1,.3,1);display:flex;flex-direction:column;overflow:hidden}
+.d-panel.on{right:0}
+.d-hd{padding:18px 20px;border-bottom:1px solid var(--bdr);display:flex;align-items:center;gap:12px;flex-shrink:0}
+.d-close{background:var(--bg);border:1px solid var(--bdr);color:var(--mut);width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:14px;transition:all .15s}
+.d-close:hover{background:#fee2e2;color:var(--red)}
+.d-av{width:42px;height:42px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0}
+.d-nm{font-size:15px;font-weight:800;color:var(--txt)}.d-info{font-size:12px;color:var(--mut);margin-top:2px}
+.d-body{flex:1;overflow-y:auto;padding:18px 20px}
+.d-ft{padding:14px 20px;border-top:1px solid var(--bdr);flex-shrink:0}
+.dwpp{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--bdr);border-radius:11px;margin-bottom:6px;transition:border-color .15s}
+.dwpp:hover{border-color:#93c5fd}.dwpp.crit{border-color:#fecaca;background:#fff9f9}.dwpp.warn{border-color:#e9d5ff;background:#faf5ff}
+.wpp-menu{position:relative;display:inline-block}
+.wpp-menu-btn{background:transparent;border:none;color:var(--sub);padding:5px 6px;border-radius:6px;cursor:pointer;font-size:16px;line-height:1;transition:all .15s}
+.wpp-menu-btn:hover{background:var(--bg);color:var(--txt)}
+.wpp-dropdown{display:none;position:absolute;right:0;top:100%;background:#fff;border:1px solid var(--bdr);border-radius:11px;box-shadow:0 8px 24px rgba(7,16,31,.15);z-index:400;min-width:180px;padding:6px;white-space:nowrap}
+.wpp-dropdown.open{display:block}
+.wpp-dropdown button{display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:none;background:transparent;color:var(--txt);font-size:13px;font-weight:600;cursor:pointer;border-radius:7px;font-family:inherit;text-align:left}
+.wpp-dropdown button:hover{background:var(--bg)}
+.wpp-dropdown button.danger{color:var(--red)}
+.wpp-dropdown button.danger:hover{background:#fee2e2}
+.wpp-dropdown .sep{height:1px;background:var(--bdr);margin:4px 0}
+.dwpp-num{font-size:13px;font-weight:700;color:var(--txt);flex:1;display:flex;align-items:center;gap:7px}
+.dwpp-acts{display:flex;gap:5px;align-items:center}
+.slot-e{padding:9px 12px;border:1.5px dashed #e2e8f2;border-radius:11px;color:var(--sub);font-size:12.5px;font-weight:600;text-align:center;margin-bottom:6px}
+/* ESTOQUE */
+.est-row{display:flex;align-items:center;gap:10px;padding:11px 14px;border:1px solid var(--bdr);border-radius:11px;background:var(--card);margin-bottom:7px;transition:border-color .15s}
+.est-row:hover{border-color:#93c5fd}.est-num{font-size:13.5px;font-weight:700;color:var(--txt);flex:1}
+/* DASHBOARD */
+.ds-hd{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.all-ok{padding:40px 20px;text-align:center;background:var(--card);border:1px solid var(--bdr);border-radius:var(--r)}
+.all-ok-ico{font-size:36px;margin-bottom:12px}.all-ok p{font-size:14px;font-weight:700}.all-ok span{font-size:12.5px;color:var(--mut)}
+/* QUEUE */
+.q-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+.qs{background:var(--card);border:1px solid var(--bdr);border-radius:12px;padding:14px 16px}
+.qs-v{font-size:30px;font-weight:800;letter-spacing:-2px;line-height:1}.qs-l{font-size:11.5px;color:var(--mut);margin-top:3px}
+.qrow{display:flex;align-items:center;gap:11px;padding:12px 14px;border:1px solid var(--bdr);border-radius:12px;background:var(--card);margin-bottom:7px;transition:all .15s}
+.qrow:hover{border-color:#93c5fd}.qrow.urg{border-color:#fecaca;background:#fff9f9}
+.qrn{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex-shrink:0}
+.r1{background:#fef3c7;color:#92400e}.r2{background:#e0e7ff;color:#3730a3}.r3{background:#f0fdf4;color:#166534}.rx{background:#f1f5f9;color:#94a3b8}
+.qi-inf{flex:1;min-width:0}.qi-nm{font-size:13.5px;font-weight:700}.qi-det{font-size:11.5px;color:var(--mut);margin-top:1px;display:flex;gap:6px;flex-wrap:wrap}.qi-rt{text-align:right;flex-shrink:0}
+.pb{width:100%;height:3px;background:#e2e8f2;border-radius:99px;margin-top:5px;overflow:hidden}.pb-f{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--red),var(--org))}
+/* DEVICES */
+.dev-row{display:flex;align-items:flex-start;gap:11px;padding:13px 14px;border:1px solid var(--bdr);border-radius:11px;background:var(--card);margin-bottom:7px;transition:border-color .15s}
+.dev-row:hover{border-color:#93c5fd}.dev-row.swap-f{border-color:#fecaca;background:#fff9f9}
+.dev-model{font-size:13.5px;font-weight:700}.dev-meta{font-size:11.5px;color:var(--mut);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.cg{color:var(--grn);font-weight:700}.cy{color:var(--ylw);font-weight:700}.cr{color:var(--red);font-weight:700}
+/* SETTINGS */
+.set-row{display:flex;align-items:center;gap:11px;padding:10px 13px;border:1px solid var(--bdr);border-radius:11px;background:var(--card);margin-bottom:7px;transition:border-color .15s}
+.set-row:hover{border-color:#93c5fd}
+.set-av{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:800;color:#fff;flex-shrink:0}
+.pin-val{font-size:13px;font-weight:700;letter-spacing:2px;min-width:52px;text-align:center;background:var(--bg);padding:4px 9px;border-radius:7px;border:1px solid var(--bdr)}
+.pin-eye{background:transparent;border:none;cursor:pointer;padding:4px 6px;border-radius:6px;color:var(--sub);font-size:13px}
+.pin-eye:hover{background:var(--bg)}
+/* MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(7,16,31,.48);z-index:400;display:none;align-items:center;justify-content:center;padding:20px}
+.modal-bg.on{display:flex}
+.modal{background:#fff;border-radius:18px;padding:26px;width:100%;max-width:420px;box-shadow:0 20px 60px rgba(7,16,31,.3);max-height:90vh;overflow-y:auto}
+.mhd{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px}
+.mhd h3{font-size:16px;font-weight:800}
+.mc-btn{background:var(--bg);border:1px solid var(--bdr);color:var(--mut);width:28px;height:28px;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px}
+.mc-btn:hover{background:#fee2e2;color:var(--red)}
+.fg{margin-bottom:11px}.fg2{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:11px}
+.fl{display:block;font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:5px}
+.fi{width:100%;padding:10px 12px;border:1.5px solid var(--bdr);border-radius:9px;background:#f8fafc;color:var(--txt);font-size:13.5px;font-weight:500;outline:none;transition:border-color .15s}
+.fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1);background:#fff}
+.fi-sm{font-size:12.5px;padding:8px 11px}
+textarea.fi{resize:vertical;min-height:58px}
+.m-sep{height:1px;background:var(--bdr);margin:14px 0}
+/* DIST MODAL */
+.dist-bg{position:fixed;inset:0;background:rgba(7,16,31,.55);z-index:500;display:none;align-items:center;justify-content:center;padding:20px}
+.dist-bg.on{display:flex}
+.dist-box{background:#fff;border-radius:20px;padding:28px 24px;width:100%;max-width:360px;box-shadow:0 24px 60px rgba(7,16,31,.32)}
+.dist-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);text-align:center}
+.dist-agent{font-size:19px;font-weight:800;text-align:center;margin:4px 0 16px}
+.dist-nw{background:var(--bg);border:1.5px solid var(--bdr);border-radius:12px;padding:16px;text-align:center;margin-bottom:6px}
+.dist-num{font-size:24px;font-weight:800;color:var(--navy);letter-spacing:-1px;font-variant-numeric:tabular-nums}
+.dist-nsub{font-size:12px;color:var(--mut);margin-top:4px;display:flex;align-items:center;justify-content:center;gap:7px}
+.dist-no{text-align:center;padding:14px;background:#fee2e2;border-radius:10px;color:#b91c1c;font-size:13px;font-weight:600;margin-bottom:14px;display:none}
+.dist-acts{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.dbbtn{width:100%;padding:12px;border:none;border-radius:11px;font-size:13.5px;font-weight:700;cursor:pointer;transition:all .15s}
+.dbbtn:hover{transform:translateY(-1px)}
+.db-ok{background:var(--navy);color:#fff}.db-ok:hover{background:var(--navy2)}
+.db-prob{background:#ffedd5;color:#9a3412}.db-prob:hover{background:#fed7aa}
+.db-cancel{background:var(--bg);color:var(--mut);border:1px solid var(--bdr)}
+/* TOAST */
+.tz{position:fixed;bottom:20px;right:20px;z-index:999;display:flex;flex-direction:column;gap:7px;pointer-events:none}
+.toast{padding:10px 15px;border-radius:11px;font-size:13px;font-weight:600;box-shadow:0 5px 20px rgba(7,16,31,.28);animation:tIn .2s ease both;max-width:300px}
+.t-ok{background:#14532d;color:#fff}.t-err{background:#7f1d1d;color:#fff}.t-info{background:var(--navy);color:#fff}
+@keyframes tIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes tOut{from{opacity:1}to{opacity:0}}
+/* MISC */
+.ovl{display:none;position:fixed;inset:0;background:rgba(7,16,31,.4);z-index:150}.ovl.on{display:block}
+.empty{text-align:center;padding:36px 16px;color:var(--mut)}.empty p{font-size:14px;font-weight:600;margin-bottom:3px}.empty span{font-size:12px;color:var(--sub)}
+.ph{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;gap:12px}
+.ph h3{font-size:16px;font-weight:800}.ph p{font-size:12px;color:var(--mut);margin-top:2px}
+body.gestao .edit-only{display:none!important}
+body.gestao .gestao-hidden{display:none!important}
+@media(max-width:1200px){:root{--sw:60px}.sb-tx,.nlbl,.nbdg,.ns,.unm,.lout span{display:none}.nb{justify-content:center;padding:8px}.sb-hd,.urow{justify-content:center}}
+@media(max-width:768px){:root{--sw:0px}.sb{transform:translateX(-100%);width:224px;transition:transform .28s}.sb.open{transform:translateX(0)}.sb-tx,.nlbl,.nbdg,.ns,.unm{display:block}.nb{justify-content:flex-start;padding:9px 10px}.sb-hd,.urow{justify-content:flex-start}.mw{margin-left:0}.content{padding:14px 15px}.topbar{padding:0 14px;height:54px}.tb-l p,.ttime{display:none}.mob-btn{display:flex}.q-stats{grid-template-columns:1fr}.d-panel{width:100%;right:-100%}.d-panel.on{right:0}}
+@media(max-width:460px){.fg2{grid-template-columns:1fr}.agent-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<div class="lp" id="lp">
+  <div class="lcard">
+    <div class="llogo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div>
+    <div class="lhd"><h2>Centro de Operações</h2><p>Selecione seu perfil e insira o PIN</p></div>
+    <div class="role-row">
+      <div class="ropt" id="role-est" onclick="setRole('estagiaria')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/><line x1="12" y1="11" x2="12" y2="15"/><line x1="10" y1="13" x2="14" y2="13"/></svg><strong>Estagiária</strong><span>Acesso completo</span></div>
+      <div class="ropt" id="role-gest" onclick="setRole('gestao')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg><strong>Gestão</strong><span>Somente leitura</span></div>
+    </div>
+    <div class="lhint" id="lhint">← Selecione um perfil</div>
+    <div class="fg"><label class="lfl">PIN de acesso</label><input class="lfi" id="l-pin" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')doLogin()"></div>
+    <button class="lbtn" onclick="doLogin()">Entrar</button>
+    <button onclick="showAgentLogin()" class="agent-lnk" style="background:none;border:none;cursor:pointer;width:100%;font-family:inherit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Sou agente — entrar por aqui</button>
+  </div>
+</div>
+<div class="ovl" id="ovl" onclick="closeMob()"></div>
+<div class="tz" id="tz"></div>
+
+<!-- AGENT LOGIN SCREEN -->
+<div id="agent-lp" style="display:none;min-height:100vh;background:var(--navy);align-items:center;justify-content:center;padding:20px">
+  <div class="lcard">
+    <div class="llogo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></div>
+    <div class="lhd"><h2>Área do Agente</h2><p>Selecione seu nome e insira o código</p></div>
+    <div class="fg"><label class="lfl">Seu nome</label><select class="lfi" id="al-agent" style="margin-bottom:0"><option value="">Selecionar agente...</option></select></div>
+    <div class="fg" style="margin-top:10px"><label class="lfl">Código de acesso</label><input class="lfi" id="al-code" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')agentLogin()"></div>
+    <div id="al-err" style="display:none;background:#fee2e2;color:#b91c1c;border-radius:9px;padding:10px 13px;font-size:12.5px;font-weight:600;margin-bottom:8px"></div>
+    <button class="lbtn" onclick="agentLogin()">Entrar na minha área</button>
+    <button onclick="showMainLogin()" class="agent-lnk" style="background:none;border:none;cursor:pointer;width:100%;font-family:inherit;margin-top:16px;padding-top:16px;border-top:1px solid var(--bdr)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="15 18 9 12 15 6"/></svg>
+      Voltar para o Centro de Operações
+    </button>
+  </div>
+</div>
+
+<!-- AGENT AREA SCREEN -->
+<div id="agent-area" style="display:none;min-height:100vh;flex-direction:column;background:var(--navy)">
+  <div style="background:var(--navy);padding:18px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;border-bottom:1px solid rgba(255,255,255,.1)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div id="aa-av" style="width:40px;height:40px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex-shrink:0"></div>
+      <div><div id="aa-name" style="font-size:16px;font-weight:800;color:#fff">—</div><div id="aa-sub" style="font-size:12px;color:rgba(255,255,255,.45);margin-top:2px">—</div></div>
+    </div>
+    <button onclick="agentLogout()" style="display:flex;align-items:center;gap:6px;padding:7px 12px;border:1px solid rgba(255,255,255,.15);border-radius:8px;background:transparent;color:rgba(255,255,255,.5);font-size:12px;font-weight:600;cursor:pointer;font-family:inherit">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>Sair
+    </button>
+  </div>
+  <div style="padding:20px;max-width:600px;width:100%;margin:0 auto">
+    <div style="font-size:13.5px;font-weight:800;color:#fff;margin-bottom:12px;display:flex;align-items:center;gap:8px">Meus WPPs <span class="badge b-b" id="aa-cnt">0</span></div>
+    <div id="aa-wpps"></div>
+  </div>
+</div>
+<!-- PANEL -->
+<div class="d-ovl" id="d-ovl" onclick="closeDPanel()"></div>
+<div class="d-panel" id="d-panel">
+  <div class="d-hd">
+    <button class="d-close" onclick="closeDPanel()">✕</button>
+    <div class="d-av" id="dp-av"></div>
+    <div style="flex:1;min-width:0"><div class="d-nm" id="dp-nm">—</div><div class="d-info" id="dp-info">—</div></div>
+    <div id="dp-agent-acts" style="display:none;gap:5px;align-items:center;flex-shrink:0">
+      <button id="dp-edit-agent" class="bedit" title="Editar agente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button id="dp-del-agent" class="bdel" title="Excluir agente"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>
+    </div>
+  </div>
+  <div class="d-body" id="dp-body"></div>
+  <div class="d-ft edit-only">
+    <button class="btn bgh" style="width:100%;justify-content:center" onclick="newWppForPanel()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Cadastrar novo WPP</button>
+  </div>
+</div>
+
+<!-- RECHARGE MODAL -->
+<div class="modal-bg" id="rech-modal">
+  <div class="modal" style="max-width:360px">
+    <div class="mhd"><h3>Registrar Recarga</h3><button class="mc-btn" onclick="closeM('rech-modal')">✕</button></div>
+    <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:14px" id="rech-num">—</div>
+    <div class="fg"><label class="fl">Data da recarga</label><input class="fi" id="rech-date" type="date"></div>
+    <button class="btn bp" style="width:100%;justify-content:center" onclick="confirmRecharge()">✓ Confirmar recarga</button>
+    <input type="hidden" id="rech-wpp-id" value="">
+  </div>
+</div>
+
+
+<!-- DEV CONFIG MODAL -->
+<div class="modal-bg" id="dev-modal-cfg">
+  <div class="modal" style="max-width:440px">
+    <div class="mhd">
+      <h3>⚙️ Configurações do Desenvolvedor</h3>
+      <button class="mc-btn" onclick="closeM('dev-modal-cfg')">✕</button>
+    </div>
+    <div style="font-size:13px;font-weight:700;color:var(--txt);margin-bottom:4px">☁️ Sincronização entre dispositivos</div>
+    <div style="font-size:12px;color:var(--mut);margin-bottom:14px">Todos os dispositivos compartilham os mesmos dados em tempo real via JSONBin.io (gratuito).</div>
+    <div class="fg"><label class="fl">JSONBin API Key</label><input class="fi" id="sync-key" placeholder="$2a$10$..." style="font-family:monospace;font-size:12px"></div>
+    <div class="fg"><label class="fl">Bin ID</label><input class="fi" id="sync-bin" placeholder="6a2871f1f5f4af5e29d42648" style="font-family:monospace"></div>
+    <div style="display:flex;gap:8px;margin-top:4px">
+      <button class="btn bbl" style="flex:1;justify-content:center" onclick="saveSyncConfig()">✓ Ativar sincronização</button>
+      <button class="btn bgh" onclick="syncToCloud(true)">↑ Forçar envio</button>
+    </div>
+    <div style="font-size:11px;color:var(--mut);margin-top:8px">Após ativar, sincroniza automaticamente a cada 30 segundos.</div>
+    <div id="sync-status" style="font-size:12px;margin-top:10px;padding:8px 12px;border-radius:8px;display:none"></div>
+  </div>
+</div>
+
+
+<!-- TRANSFER MODAL (bulk - on agent delete) -->
+<div class="modal-bg" id="transfer-modal">
+  <div class="modal" style="max-width:500px">
+    <div class="mhd"><h3 id="transfer-title">Transferir chips</h3><button class="mc-btn" onclick="closeM('transfer-modal')">✕</button></div>
+    <div style="font-size:13px;color:var(--mut);margin-bottom:14px">Selecione o destino de cada chip antes de excluir o agente:</div>
+    <div id="transfer-list"></div>
+    <div style="display:flex;gap:8px;margin-top:16px">
+      <button class="btn bp" style="flex:1;justify-content:center" onclick="confirmTransfer()">✓ Confirmar e excluir agente</button>
+      <button class="btn bgh" style="flex:1;justify-content:center" onclick="closeM('transfer-modal')">Cancelar</button>
+    </div>
+    <input type="hidden" id="transfer-agent-id">
+  </div>
+</div>
+
+<!-- SINGLE WPP TRANSFER MODAL -->
+<div class="modal-bg" id="wpp-transfer-modal">
+  <div class="modal" style="max-width:400px">
+    <div class="mhd"><h3>Transferir Chip</h3><button class="mc-btn" onclick="closeM('wpp-transfer-modal')">✕</button></div>
+    <div style="background:var(--bg);border-radius:11px;padding:13px 15px;margin-bottom:16px">
+      <div style="font-size:15px;font-weight:800;color:var(--txt)" id="wt-number">—</div>
+      <div style="font-size:12px;color:var(--mut);margin-top:3px" id="wt-info">—</div>
+    </div>
+    <div class="fg"><label class="fl">Transferir para</label>
+      <select class="fi" id="wt-dest">
+        <option value="">→ Devolver ao estoque</option>
+      </select>
+    </div>
+    <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="confirmWppTransfer()">✓ Confirmar transferência</button>
+    <input type="hidden" id="wt-wpp-id">
+  </div>
+</div>
+
+<!-- DIST MODAL -->
+<div class="dist-bg" id="dist-bg">
+  <div class="dist-box">
+    <div class="dist-lbl">Distribuindo WPP para</div>
+    <div class="dist-agent" id="dm-agent">—</div>
+    <div id="dm-nw"><div class="dist-nw"><div class="dist-num" id="dm-num">—</div><div class="dist-nsub"><span class="badge" id="dm-brand">—</span><span id="dm-stock"></span></div></div></div>
+    <div class="dist-no" id="dm-no">Nenhum WPP disponível no estoque.</div>
+    <div class="dist-acts">
+      <button class="dbbtn db-ok" id="dm-ok" onclick="confirmDist()">✓  Confirmar distribuição</button>
+      <button class="dbbtn db-prob" onclick="chipProb()">⚠  Problema com este chip → manutenção</button>
+      <button class="dbbtn db-cancel" onclick="closeDist()">Cancelar</button>
+    </div>
+  </div>
+</div>
+<!-- WPP MODAL -->
+<div class="modal-bg" id="wpp-modal">
+  <div class="modal">
+    <div class="mhd"><h3>Cadastrar WPP</h3><button class="mc-btn" onclick="closeWppModal()">✕</button></div>
+    <div class="fg"><label class="fl">Número</label><input class="fi" id="f-num" placeholder="34 9 9999-0001" inputmode="numeric"></div>
+    <div class="fg2"><div><label class="fl">Marca</label><select class="fi fi-sm" id="f-brand"><option value="">Selecionar...</option></select></div><div><label class="fl">Status</label><select class="fi fi-sm" id="f-status"><option value="disponivel">Disponível (estoque)</option><option value="ativo">Ativo</option><option value="manutencao">Manutenção</option><option value="reserva">Reserva</option><option value="banido">Banido</option><option value="suspenso">Restrito / Suspenso</option><option value="recuperacao">Recuperado</option><option value="descartado">Cancelado</option></select></div></div>
+    <div class="m-sep"></div>
+    <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:10px">Atribuição (opcional)</div>
+    <div class="fg2"><div><label class="fl">Equipe</label><select class="fi fi-sm" id="f-team" onchange="updateAgentSelect()"><option value="">Sem equipe</option></select></div><div><label class="fl">Agente</label><select class="fi fi-sm" id="f-agent"><option value="">Sem agente</option></select></div></div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="f-notes" placeholder="Chip novo, histórico..."></textarea></div>
+    <div class="fg"><label class="fl">Data da última recarga</label><input class="fi" id="f-recharge" type="date"></div>
+    <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="addWpp()">Cadastrar WPP</button>
+  </div>
+</div>
+<!-- DEVICE MODAL -->
+<div class="modal-bg" id="dev-modal">
+  <div class="modal">
+    <div class="mhd"><h3 id="dev-modal-title">Cadastrar Aparelho</h3><button class="mc-btn" onclick="closeM('dev-modal')">✕</button></div>
+    <div class="fg"><label class="fl">Modelo</label><input class="fi" id="dv-model" placeholder="Ex: Samsung A03s"></div>
+    <div class="fg2"><div><label class="fl">Condição</label><select class="fi fi-sm" id="dv-cond"><option value="bom">Bom</option><option value="regular">Regular</option><option value="defeito">Com defeito</option></select></div><div><label class="fl">Responsável</label><input class="fi fi-sm" id="dv-resp" placeholder="Agente ou Disponível"></div></div>
+    <div class="m-sep"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:11px">
+      <input type="checkbox" id="dv-terms-signed" style="width:16px;height:16px;cursor:pointer;accent-color:var(--blue)" onchange="toggleTermsDate()">
+      <label for="dv-terms-signed" style="font-size:13px;font-weight:700;cursor:pointer">Termo de responsabilidade assinado</label>
+    </div>
+    <div id="dv-terms-wrap" style="display:none" class="fg"><label class="fl">Data de assinatura</label><input class="fi" id="dv-terms" type="date"></div>
+    <div class="fg"><label class="fl">Observações</label><textarea class="fi" id="dv-notes" placeholder="Observações adicionais..."></textarea></div>
+    <input type="hidden" id="dv-id" value="">
+    <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="saveDevice()">Salvar</button>
+  </div>
+</div>
+<!-- AGENT MODAL -->
+<div class="modal-bg" id="agent-modal">
+  <div class="modal">
+    <div class="mhd"><h3 id="agent-modal-title">Cadastrar Agente</h3><button class="mc-btn" onclick="closeM('agent-modal')">✕</button></div>
+    <div class="fg"><label class="fl">Nome completo</label><input class="fi" id="ag-name" placeholder="Ex: João Silva" oninput="autoInitials()"></div>
+    <div class="fg2"><div><label class="fl">Iniciais</label><input class="fi fi-sm" id="ag-init" placeholder="JS" maxlength="3"></div><div><label class="fl">Equipe</label><select class="fi fi-sm" id="ag-team"></select></div></div>
+    <div class="fg"><label class="fl">Código de acesso (área do agente)</label><input class="fi" id="ag-code" placeholder="Ex: Leo@2024"></div>
+    <input type="hidden" id="ag-id" value="">
+    <button class="btn bp" style="width:100%;justify-content:center;margin-top:4px" onclick="saveAgent()">Salvar agente</button>
+  </div>
+</div>
+<!-- BRAND MODAL -->
+<div class="modal-bg" id="brand-modal">
+  <div class="modal" style="max-width:360px">
+    <div class="mhd"><h3>Nova Marca</h3><button class="mc-btn" onclick="closeM('brand-modal')">✕</button></div>
+    <div class="fg"><label class="fl">Nome da marca</label><input class="fi" id="bm-name" placeholder="Ex: Premium" onkeydown="if(event.key==='Enter')saveBrand()"></div>
+    <button class="btn bp" style="width:100%;justify-content:center" onclick="saveBrand()">Criar marca</button>
+  </div>
+</div>
+
+<!-- TEAM MODAL -->
+<div class="modal-bg" id="team-modal">
+  <div class="modal" style="max-width:360px">
+    <div class="mhd"><h3>Nova Equipe</h3><button class="mc-btn" onclick="closeM('team-modal')">✕</button></div>
+    <div class="fg"><label class="fl">Nome da equipe</label><input class="fi" id="tm-name" placeholder="Ex: Equipe Delta" onkeydown="if(event.key==='Enter')saveTeam()"></div>
+    <button class="btn bp" style="width:100%;justify-content:center" onclick="saveTeam()">Criar equipe</button>
+  </div>
+</div>
+<!-- PIN MODAL -->
+<div class="modal-bg" id="pin-modal">
+  <div class="modal" style="max-width:360px">
+    <div class="mhd"><h3 id="pm-t">Alterar PIN</h3><button class="mc-btn" onclick="closeM('pin-modal')">✕</button></div>
+    <div class="fg"><label class="fl">Novo PIN</label><input class="fi" id="pm-p1" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')$('pm-p2').focus()"></div>
+    <div class="fg"><label class="fl">Confirmar PIN</label><input class="fi" id="pm-p2" type="password" placeholder="••••" onkeydown="if(event.key==='Enter')savePinChange()"></div>
+    <button class="btn bp" style="width:100%;justify-content:center" onclick="savePinChange()">Salvar</button>
+  </div>
+</div>
+<!-- APP -->
+<div class="app" id="app">
+  <aside class="sb" id="sidebar">
+    <div class="sb-hd"><div class="sb-mk"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><div class="sb-tx"><strong>Centro de Operações</strong><span>WPPs · Equipes</span></div></div>
+    <nav class="sb-nav">
+      <div class="ns">Principal</div>
+      <button class="nb on" data-s="dashboard" onclick="nav('dashboard',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></span><span class="nlbl">Dashboard</span><span class="nbdg" id="cnt-d" style="display:none">0</span></button>
+      <button class="nb" data-s="whatsapps" onclick="nav('whatsapps',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 3.1 10.9a19.79 19.79 0 0 1-3.07-8.7A2 2 0 0 1 2 .18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L6.09 7.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></span><span class="nlbl">WhatsApps</span></button>
+      <button class="nb gestao-hidden" data-s="queue" onclick="nav('queue',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/></svg></span><span class="nlbl">Fila Automática</span><span class="nbdg" id="cnt-q" style="display:none">0</span></button>
+      <div class="ns">Gestão</div>
+      <button class="nb" data-s="report" onclick="nav('report',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span><span class="nlbl">Relatório Diário</span></button>
+      <button class="nb" data-s="devices" onclick="nav('devices',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg></span><span class="nlbl">Aparelhos</span></button>
+      <button class="nb edit-only" data-s="settings" onclick="nav('settings',this)"><span class="nic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span><span class="nlbl">Configurações</span></button>
+    </nav>
+    <div class="sb-ft">
+      <button onclick="openDevConfig()" style="display:flex;align-items:center;gap:7px;width:100%;padding:7px 10px;margin-bottom:4px;border:none;background:rgba(255,255,255,.04);color:rgba(255,255,255,.3);border-radius:7px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .15s" onmouseover="this.style.background='rgba(255,255,255,.08)';this.style.color='rgba(255,255,255,.7)'" onmouseout="this.style.background='rgba(255,255,255,.04)';this.style.color='rgba(255,255,255,.3)'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        <span>Config. desenvolvedor</span>
+        <span id="sync-dot" style="width:6px;height:6px;border-radius:50%;background:#94a3b8;flex-shrink:0;margin-left:auto"></span>
+      </button>
+      <div class="urow"><div class="uav" id="u-av">?</div><div class="unm"><strong id="u-nm">—</strong><span id="u-rl">—</span></div></div><button class="lout" onclick="doLogout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;flex-shrink:0"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg><span>Sair</span></button></div>
+  </aside>
+  <div class="mw">
+    <div class="topbar">
+      <div class="tb-l"><button class="tbtn mob-btn" onclick="openMob()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button><div><h2 id="pg-t">Dashboard</h2><p id="pg-s">Ações pendentes</p></div></div>
+      <div class="tb-r"><div class="ro-tag" id="ro-tag">👁 Leitura</div><button id="btn-novo-wpp" class="tbtn pri edit-only" style="display:none" onclick="openM('wpp-modal')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Novo WPP</button><div class="ttime" id="clock">00:00:00</div><div class="ttime" id="save-ind" style="color:var(--sub);display:none">✓ salvo</div></div>
+    </div>
+    <div class="content">
+      <section id="dashboard" class="screen on"><div id="dash-body"></div></section>
+      <section id="whatsapps" class="screen"><div class="sec-pills" id="wa-pills"></div><div id="wa-content"></div></section>
+      <section id="queue" class="screen">
+        <div class="ph"><div><h3>Fila Automática</h3><p>Agentes abaixo da regra — por urgência</p></div><button class="btn bp edit-only" onclick="openDistFirst()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="8 12 12 16 16 12"/><line x1="12" y1="8" x2="12" y2="16"/></svg>Distribuir para o 1º</button></div>
+        <div class="q-stats"><div class="qs"><div class="qs-v" id="q-tot">0</div><div class="qs-l">Na fila</div></div><div class="qs" style="border-left:3px solid #2563eb"><div class="qs-v" id="q-mer">0</div><div class="qs-l">Meritus</div></div><div class="qs" style="border-left:3px solid #16a34a"><div class="qs-v" id="q-sav">0</div><div class="qs-l">Savoy</div></div></div>
+        <div id="q-list"></div>
+      </section>
+      <section id="report" class="screen">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;gap:12px;flex-wrap:wrap">
+          <div><h3 style="font-size:16px;font-weight:800">Relatório Diário</h3><p style="font-size:12px;color:var(--mut);margin-top:2px" id="report-date">—</p></div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+            <input type="date" id="report-picker" class="fi fi-sm" style="width:160px" onchange="renderReport()">
+            <button class="btn bgh" onclick="renderReport()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>Atualizar</button>
+          </div>
+        </div>
+        <div id="report-body"></div>
+      </section>
+      <section id="devices" class="screen">
+        <div class="ph"><div><h3>Aparelhos</h3><p id="dev-lbl">Registro individual</p></div><button class="btn bbl edit-only" onclick="openNewDevice()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>Cadastrar</button></div>
+        <div id="dev-list"></div>
+      </section>
+      <section id="settings" class="screen edit-only">
+        <div style="max-width:600px;display:flex;flex-direction:column;gap:14px">
+<div class="card" style="padding:20px 22px">
+            <div style="font-size:14px;font-weight:800;margin-bottom:14px">Logins do Sistema</div>
+            <div class="set-row"><div class="set-av" style="background:linear-gradient(135deg,#1d4ed8,#06b6d4)">ES</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">Estagiária</div><div style="font-size:11px;color:var(--mut)">Acesso completo</div></div><div style="display:flex;align-items:center;gap:5px"><span class="pin-val" id="sv-est">••••</span><button class="pin-eye" onclick="toggleSysPin('est','estagiaria')">👁</button><button class="btn bgh" style="font-size:11.5px;padding:5px 9px" onclick="openPinEdit('estagiaria','Estagiária')">Alterar PIN</button></div></div>
+            <div class="set-row"><div class="set-av" style="background:linear-gradient(135deg,#7c3aed,#3b82f6)">GT</div><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">Gestão</div><div style="font-size:11px;color:var(--mut)">Somente leitura</div></div><div style="display:flex;align-items:center;gap:5px"><span class="pin-val" id="sv-gest">••••</span><button class="pin-eye" onclick="toggleSysPin('gest','gestao')">👁</button><button class="btn bgh" style="font-size:11.5px;padding:5px 9px" onclick="openPinEdit('gestao','Gestão')">Alterar PIN</button></div></div>
+          </div>
+          <div class="card" style="padding:20px 22px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:800">Marcas</div><button class="btn bgh" style="font-size:12px;padding:5px 11px" onclick="openM('brand-modal')">+ Nova marca</button></div>
+            <div id="brands-list"></div>
+          </div>
+          <div class="card" style="padding:20px 22px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:800">Equipes</div><button class="btn bgh" style="font-size:12px;padding:5px 11px" onclick="openM('team-modal')">+ Nova equipe</button></div>
+            <div id="teams-list"></div>
+          </div>
+          <div class="card" style="padding:20px 22px">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px"><div style="font-size:14px;font-weight:800">Agentes</div><button class="btn bbl" style="font-size:12px;padding:5px 11px" onclick="openNewAgent()">+ Novo agente</button></div>
+            <div id="agents-list"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>
+<script>
+const SK='co_v4';
+const PINS={estagiaria:'0000',gestao:'1111'};
+let teams=[{id:1,name:'Titanium'},{id:2,name:'Clã Mandacaru'},{id:3,name:'ADM'}];
+let agents=[
+  {id:1,name:'Leonardo Leão',initials:'LL',teamId:1,brand:'Meritus',required:4,code:'1001'},
+  {id:2,name:'João Miguel',initials:'JM',teamId:1,brand:'Meritus',required:4,code:'1002'},
+  {id:3,name:'Bruno Rossi',initials:'BR',teamId:1,brand:'Meritus',required:4,code:'1003'},
+  {id:4,name:'Hellena Mendes',initials:'HM',teamId:1,brand:'Savoy',required:1,code:'1004'},
+  {id:5,name:'Fábio Santos',initials:'FS',teamId:1,brand:'Meritus',required:4,code:'1005'},
+  {id:6,name:'Renan Saverin',initials:'RS',teamId:1,brand:'Meritus',required:4,code:'1006'},
+  {id:7,name:'Antônia Leal',initials:'AL',teamId:1,brand:'Savoy',required:1,code:'1007'},
+  {id:8,name:'Murilo Azevedo',initials:'MA',teamId:1,brand:'Meritus',required:4,code:'1008'},
+  {id:9,name:'Alisson Gonçales',initials:'AG',teamId:1,brand:'Meritus',required:4,code:'1009'},
+  {id:10,name:'Lucas Falcão',initials:'LF',teamId:1,brand:'Meritus',required:4,code:'1010'},
+  {id:11,name:'Fernanda Vilar',initials:'FV',teamId:1,brand:'Savoy',required:1,code:'1011'},
+  {id:12,name:'Erick Lobo',initials:'EL',teamId:2,brand:'Meritus',required:4,code:'2001'},
+  {id:13,name:'Tereza Montoya',initials:'TM',teamId:2,brand:'Meritus',required:4,code:'2002'},
+  {id:14,name:'Cesar Brandão',initials:'CB',teamId:2,brand:'Meritus',required:4,code:'2003'},
+  {id:15,name:'Túlio Monteiro',initials:'TU',teamId:2,brand:'Savoy',required:1,code:'2004'},
+  {id:16,name:'Henrique Medeiros',initials:'HE',teamId:2,brand:'Meritus',required:4,code:'2005'},
+  {id:17,name:'Laura Carvalho',initials:'LC',teamId:2,brand:'Savoy',required:1,code:'2006'},
+  {id:18,name:'Cristiano Belford',initials:'CB',teamId:2,brand:'Meritus',required:4,code:'2007'},
+];
+let wpps=[],devs=[],nW=50,nD=10,nAg=20,nTm=4;
+let activityLog=[];
+let brands=['Meritus','Savoy','LM'];
+let waSec='estoque',selAgent=null,currentRole=null,loginRole=null;
+let pinVis={},distSt={agentId:null,wppId:null},editPinCtx={};
+const dWpps=[];
+const dDevs=[];
+const pages={dashboard:{t:'Dashboard',s:'Ações pendentes'},whatsapps:{t:'WhatsApps',s:'Estoque e agentes por equipe'},queue:{t:'Fila Automática',s:'Distribuição por urgência'},devices:{t:'Aparelhos',s:'Registro individual'},settings:{t:'Configurações',s:'Logins, equipes e agentes'},
+  report:{t:'Relatório Diário',s:'Atividades e produtividade'}};
+const sCfg={disponivel:{cls:'b-b',dot:'sd-av',lbl:'Disponível'},ativo:{cls:'b-g',dot:'sd-on',lbl:'Ativo'},banido:{cls:'b-r',dot:'sd-ban',lbl:'Banido'},suspenso:{cls:'b-y',dot:'sd-sup',lbl:'Suspenso'},recuperacao:{cls:'b-o',dot:'sd-rc',lbl:'Recuperação'},reserva:{cls:'b-c',dot:'sd-rs',lbl:'Reserva'},manutencao:{cls:'b-m',dot:'sd-man',lbl:'Manutenção'},descartado:{cls:'b-m',dot:'sd-man',lbl:'Cancelado'}};
+const bCfgBase={Meritus:'b-b',Savoy:'b-g',LM:'b-p'};
+const bCfgFallback=['b-b','b-g','b-p','b-c','b-o','b-y','b-m'];
+function bCfg(brand){
+  if(bCfgBase[brand]) return {cls:bCfgBase[brand]};
+  const idx=brands.indexOf(brand);
+  return {cls:idx>=0?bCfgFallback[idx%bCfgFallback.length]:'b-m'};
+}
+const $=id=>document.getElementById(id);
+const tx=(id,v)=>{const e=$(id);if(e)e.textContent=v;};
+const ga=id=>agents.find(a=>a.id===id);
+const gt=id=>teams.find(t=>t.id===id);
+const actOf=aid=>wpps.filter(w=>w.agentId===aid&&w.status==='ativo').length;
+const avWpp=brand=>wpps.find(w=>w.brand===brand&&w.status==='disponivel');
+const avCls=id=>'a'+((id%6)+1);
+const cE=()=>currentRole==='estagiaria';
+const delIco='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>';
+const editIco='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
+function qFn(){return agents.map(a=>{const ac=actOf(a.id);return{...a,active:ac,needed:a.required-ac};}).filter(a=>a.needed>0).sort((a,b)=>b.needed-a.needed||a.name.localeCompare(b.name));}
+function pips(ac,req){let h='';for(let i=0;i<Math.min(req,6);i++)h+='<span class="pip '+(i<ac?'on':'need')+'"></span>';return h;}
+function genInitials(n){const p=n.trim().split(/\s+/).filter(x=>x);if(!p.length)return'';if(p.length===1)return p[0].substring(0,2).toUpperCase();return(p[0][0]+p[p.length-1][0]).toUpperCase();}
+function fmtDate(d){if(!d)return'—';const[y,m,dd]=d.split('-');return dd+'/'+m+'/'+y;}
+function todayDate(){return new Date().toISOString().split('T')[0];}
+function logActivity(type,data){
+  const entry={id:Date.now(),type,...data,timestamp:new Date().toISOString(),date:todayDate()};
+  activityLog.push(entry);
+  // keep last 90 days
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-90);
+  const cs=cutoff.toISOString().split('T')[0];
+  activityLog=activityLog.filter(e=>e.date>=cs);
+}
+function daysSince(dateStr){if(!dateStr)return null;const d=new Date(dateStr),t=new Date();t.setHours(0,0,0,0);d.setHours(0,0,0,0);return Math.floor((t-d)/(1000*60*60*24));}
+function needsRecharge(w){if(w.status!=='ativo'||!w.lastRecharge)return false;return daysSince(w.lastRecharge)>=15;}
+function todayStr(){return new Date().toISOString().split('T')[0];}
+function toggleWppMenu(btn){
+  event.stopPropagation();
+  closeWppMenus();
+  var el=document.getElementById('wmenu-'+btn.dataset.wid);
+  if(el) el.classList.toggle('open');
+}
+function closeWppMenus(){
+  document.querySelectorAll('.wpp-dropdown.open').forEach(m=>m.classList.remove('open'));
+}
+function setWppStatus(wppId, status){
+  const w=wpps.find(x=>x.id===wppId); if(!w) return;
+  const old=w.status;
+  w.status=status;
+  if(status==='recuperacao'||status==='disponivel'){w.agentId=null;w.teamId=null;}
+  logActivity('status_alterado',{wppId:w.id,number:w.number,brand:w.brand,from:old,to:status});
+  save(); renderAll(); if(selAgent) renderDPanel();
+  const lbls={ativo:'Ativo',banido:'Banido',suspenso:'Restrito',recuperacao:'Recuperado',disponivel:'Disponível'};
+  toast(w.number+' → '+(lbls[status]||status),'ok');
+}
+function openRechargeModal(wppId){
+  const w=wpps.find(x=>x.id===wppId); if(!w)return;
+  $('rech-wpp-id').value=wppId;
+  $('rech-num').textContent=w.number+(w.lastRecharge?' · Última: '+fmtDate(w.lastRecharge):'');
+  $('rech-date').value=todayStr();
+  openM('rech-modal');
+}
+function confirmRecharge(){
+  const wppId=parseInt($('rech-wpp-id').value), date=$('rech-date').value;
+  if(!date){toast('Selecione a data','err');return;}
+  const w=wpps.find(x=>x.id===wppId); if(!w)return;
+  w.lastRecharge=date;
+  logActivity('recarga',{wppId:w.id,number:w.number,brand:w.brand,date});
+  save(); renderAll(); if(selAgent)renderDPanel();
+  closeM('rech-modal'); toast(w.number+' — recarga registrada!','ok');
+}
+function registerRecharge(wppId){openRechargeModal(wppId);}
+/* STORAGE */
+function save(){
+  try{
+    const data = {wpps,devs,nW,nD,nAg,nTm,
+      agents:agents.map(a=>({...a})),
+      teams:teams.map(t=>({...t})),
+      pins:{...PINS},
+      brands:[...brands],
+      activityLog:activityLog.slice(-500),
+      savedAt: new Date().toISOString()
+    };
+    localStorage.setItem(SK, JSON.stringify(data));
+    const si=document.getElementById('save-ind');
+    if(si){si.style.display='';clearTimeout(si._t);si._t=setTimeout(()=>si.style.display='none',2000);}
+    if(syncReady()) syncToCloud(false);
+  }catch(e){
+    console.error('Erro ao salvar dados:', e);
+    toast('Erro ao salvar','err');
+  }
+}
+function load(){
+  try{
+    const r=localStorage.getItem(SK);
+    if(r){
+      const s=JSON.parse(r);
+      // WPPs
+      if(s.wpps) wpps=s.wpps;
+      // Devices — migrate old format (qty/responsible only) to new format
+      if(s.devs) devs=s.devs.map(d=>({
+        id:d.id||0, model:d.model||'',
+        condition:d.condition||'bom',
+        responsible:d.responsible||'Disponível',
+        termsSigned:d.termsSigned||false,
+        termsDate:d.termsDate||'',
+        swap:d.swap||false,
+        notes:d.notes||''
+      }));
+      // Counters — support old keys nextW/nextD too
+      if(s.nW) nW=s.nW; else if(s.nextW) nW=s.nextW;
+      if(s.nD) nD=s.nD; else if(s.nextD) nD=s.nextD;
+      if(s.nAg) nAg=s.nAg;
+      if(s.nTm) nTm=s.nTm;
+      // Agents — load if present and valid, migrate missing fields
+      if(s.agents&&s.agents.length){
+        const migrated=s.agents.map(a=>({
+          id:a.id, name:a.name||'', initials:a.initials||'?',
+          teamId:a.teamId||null, brand:a.brand||'Meritus',
+          required:a.required||4, code:a.code||(agents.find(d=>d.id===a.id)||{code:String(1000+a.id)}).code
+        }));
+        agents.splice(0,agents.length,...migrated);
+        // ensure nAg is above max id
+        const maxId=Math.max(...migrated.map(a=>a.id),nAg-1);
+        nAg=maxId+1;
+      }
+      // Teams — load if present
+      if(s.teams&&s.teams.length){
+        teams.splice(0,teams.length,...s.teams);
+        const maxTId=Math.max(...s.teams.map(t=>t.id),nTm-1);
+        nTm=maxTId+1;
+      }
+      // PINs
+      if(s.pins){
+        PINS.estagiaria=s.pins.estagiaria||PINS.estagiaria;
+        PINS.gestao=s.pins.gestao||PINS.gestao;
+      }
+      return;
+    }
+  }catch(e){}
+  // First run — use demo defaults
+  wpps=JSON.parse(JSON.stringify(dWpps));
+  devs=JSON.parse(JSON.stringify(dDevs));
+}
+/* AUTH */
+function setRole(r){loginRole=r;$('role-est').classList.toggle('on',r==='estagiaria');$('role-gest').classList.toggle('on',r==='gestao');$('lhint').textContent=r==='estagiaria'?'PIN padrão: 0000':'PIN padrão: 1111';}
+function doLogin(){if(!loginRole){toast('Selecione um perfil','err');return;}const p=$('l-pin').value;if(p!==PINS[loginRole]){toast('PIN incorreto','err');return;}currentRole=loginRole;sessionStorage.setItem('co_role',currentRole);$('lp').style.display='none';$('app').classList.add('on');document.body.classList.toggle('gestao',currentRole==='gestao');$('ro-tag').style.display=currentRole==='gestao'?'flex':'none';updateUser(); load();
+  // Repair agent codes
+  const defCodes={1:'1001',2:'1002',3:'1003',4:'1004',5:'1005',6:'1006',7:'1007',8:'1008',9:'1009',10:'1010',11:'1011',12:'2001',13:'2002',14:'2003',15:'2004',16:'2005',17:'2006',18:'2007'};
+  agents.forEach(a=>{if(!a.code){a.code=defCodes[a.id]||String(1000+a.id);}});
+  renderAll();
+  if(syncReady()){
+    // Pull from cloud FIRST — only push if local data is newer
+    syncFromCloud(false).then(()=>{
+      // After pulling, save local state only if we have real data
+      if(wpps.length>0||devs.length>0) save();
+      startSyncInterval();
+    });
+  } else {
+    save();
+  }
+}
+function doLogout(){save();currentRole=null;sessionStorage.removeItem('co_role');$('lp').style.display='flex';$('app').classList.remove('on');document.body.classList.remove('gestao');$('ro-tag').style.display='none';loginRole=null;$('role-est').classList.remove('on');$('role-gest').classList.remove('on');$('l-pin').value='';$('lhint').textContent='← Selecione um perfil';}
+function updateUser(){const nm={estagiaria:'Estagiária',gestao:'Gestão'},rl={estagiaria:'Acesso completo',gestao:'Somente leitura'},ic={estagiaria:'ES',gestao:'GT'};tx('u-nm',nm[currentRole]);tx('u-rl',rl[currentRole]);const a=$('u-av');if(a)a.textContent=ic[currentRole]||'?';}
+/* RENDER */
+function renderDashboard(){
+  // 1. WPPs banidos/suspensos
+  const crit = wpps.filter(w => w.status==='banido' || w.status==='suspenso');
+  // 2. Recargas vencidas (30+ dias desde última recarga)
+  const recargas = wpps.filter(w => needsRecharge(w));
+  // 3. WPPs sem recarga registrada mas ativos
+  const semRecarga = wpps.filter(w => w.status==='ativo' && !w.lastRecharge);
+  // 4. Aparelhos marcados para troca
+  const trocas = devs.filter(d => d.swap);
+
+  const total = crit.length + recargas.length + semRecarga.length + trocas.length;
+  const b = $('cnt-d');
+  if(b){ b.textContent = total; b.style.display = total > 0 ? '' : 'none'; }
+
+  if(!total){
+    $('dash-body').innerHTML = '<div class="all-ok"><div class="all-ok-ico">✓</div><p>Tudo em ordem!</p><span>Nenhuma ação pendente no momento.</span></div>';
+    return;
+  }
+
+  let h = '';
+
+  // SEÇÃO 1 — Recuperação (banidos/suspensos)
+  if(crit.length){
+    h += '<div style="margin-bottom:22px">';
+    h += '<div class="ds-hd">🚫 Recuperação pendente <span class="badge b-r">'+crit.length+'</span></div>';
+    h += crit.map(w => {
+      const sc = sCfg[w.status], ag = w.agentId ? ga(w.agentId) : null, bc = bCfg(w.brand)||{cls:'b-m'};
+      return '<div class="row crit"><div class="row-main">'
+        +'<div class="row-title"><span class="sdot '+sc.dot+'"></span>'+w.number
+        +'<span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 6px">'+w.brand+'</span></div>'
+        +'<div class="row-sub">'+sc.lbl+(ag?' · '+ag.name:'')+(ag&&gt(ag.teamId)?' · '+gt(ag.teamId).name:'')+'</div>'
+        +'</div><div class="row-acts">'
+        +(cE()?'<button class="btn bgr" onclick="markVoltou('+w.id+')">✓ Voltou</button>'
+              +'<button class="bdel" onclick="delWpp('+w.id+')">'+delIco+'</button>':'')
+        +'</div></div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  // SEÇÃO 2 — Recargas vencidas (30+ dias)
+  if(recargas.length){
+    h += '<div style="margin-bottom:22px">';
+    h += '<div class="ds-hd">🔋 Recargas vencidas <span class="badge b-p">'+recargas.length+'</span></div>';
+    h += recargas.map(w => {
+      const ag = w.agentId ? ga(w.agentId) : null, bc = bCfg(w.brand)||{cls:'b-m'};
+      const ds = daysSince(w.lastRecharge);
+      return '<div class="row" style="border-color:#e9d5ff;background:#faf5ff"><div class="row-main">'
+        +'<div class="row-title">🔋 '+w.number
+        +'<span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 6px">'+w.brand+'</span>'
+        +'<span class="badge b-p" style="font-size:10px">'+ds+' dias sem recarga</span></div>'
+        +'<div class="row-sub">'+(ag?ag.name+' · ':'')+'Última recarga: '+fmtDate(w.lastRecharge)+'</div>'
+        +'</div><div class="row-acts">'
+        +(cE()?'<button class="btn" style="background:#7c3aed;color:#fff;font-size:12px;padding:6px 12px" onclick="openRechargeModal('+w.id+')">Registrar recarga</button>':'')
+        +'</div></div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  // SEÇÃO 3 — Sem recarga registrada
+  if(semRecarga.length){
+    h += '<div style="margin-bottom:22px">';
+    h += '<div class="ds-hd">🔋 Sem recarga registrada <span class="badge b-m">'+semRecarga.length+'</span></div>';
+    h += semRecarga.map(w => {
+      const ag = w.agentId ? ga(w.agentId) : null, bc = bCfg(w.brand)||{cls:'b-m'};
+      return '<div class="row"><div class="row-main">'
+        +'<div class="row-title">'+w.number
+        +'<span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 6px">'+w.brand+'</span></div>'
+        +'<div class="row-sub">'+(ag?ag.name+(gt(ag.teamId)?' · '+gt(ag.teamId).name:''):' Estoque')+'</div>'
+        +'</div><div class="row-acts">'
+        +(cE()?'<button class="btn" style="background:#7c3aed;color:#fff;font-size:12px;padding:6px 12px" onclick="openRechargeModal('+w.id+')">Registrar recarga</button>':'')
+        +'</div></div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  // SEÇÃO 4 — Aparelhos para troca
+  if(trocas.length){
+    h += '<div style="margin-bottom:22px">';
+    h += '<div class="ds-hd">📱 Aparelhos para troca <span class="badge b-y">'+trocas.length+'</span></div>';
+    h += trocas.map(d => {
+      return '<div class="row warn"><div class="row-main">'
+        +'<div class="row-title">'+d.model+'</div>'
+        +'<div class="row-sub">'+(d.responsible||'Disponível')+(d.notes?' · '+d.notes:'')+'</div>'
+        +'</div><div class="row-acts">'
+        +(cE()?'<button class="btn bgh" onclick="toggleSwap('+d.id+')">✓ Resolvido</button>':'')
+        +'</div></div>';
+    }).join('');
+    h += '</div>';
+  }
+
+  $('dash-body').innerHTML = h;
+}
+
+function renderWA(){const nb=$('btn-novo-wpp');if(nb)nb.style.display=cE()?'':'none';const estN=wpps.filter(w=>w.status==='disponivel'&&!w.agentId).length;const pills=[{k:'estoque',lbl:'Estoque',n:estN},...teams.map(t=>({k:'t'+t.id,lbl:t.name,n:agents.filter(a=>a.teamId===t.id).length}))];$('wa-pills').innerHTML=pills.map(p=>'<button class="sp '+(waSec===p.k?'on':'')+'" onclick="setWASec(\''+p.k+'\')">'+p.lbl+' <span class="sp-n">'+p.n+'</span></button>').join('');const c=$('wa-content');if(waSec==='estoque'){const ew=wpps.filter(w=>w.status==='disponivel'&&!w.agentId);if(!ew.length){c.innerHTML='<div class="empty"><p>Estoque vazio</p><span>Use "Novo WPP" para cadastrar.</span></div>';return;}c.innerHTML=ew.map(w=>{const bc=bCfg(w.brand)||{cls:'b-m'};var rechTag='';if(w.lastRecharge){var ds2=daysSince(w.lastRecharge);rechTag='<span class="badge '+(ds2>=15?'b-p':'b-m')+'" style="font-size:10px">🔋 '+(ds2>=15?ds2+'d vencida':fmtDate(w.lastRecharge))+'</span>';}return'<div class="est-row"><div style="display:flex;align-items:center;gap:8px;flex:1;flex-wrap:wrap"><span class="sdot sd-av"></span><span class="est-num">'+w.number+'</span><span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 6px">'+w.brand+'</span>'+rechTag+'</div><div style="display:flex;gap:6px">'+(cE()?'<button class="btn bbl" style="font-size:12px;padding:6px 10px" onclick="openDistForWpp('+w.id+')">Distribuir</button><button class="btn bgh" style="font-size:12px;padding:6px 10px" onclick="openWppTransfer('+w.id+')">↔ Transferir</button><button class="bdel" onclick="delWpp('+w.id+')">'+delIco+'</button>':'')+'</div></div>';}).join('');}else{const tid=parseInt(waSec.replace('t',''));const ta=agents.filter(a=>a.teamId===tid);let grid=ta.map(a=>{const ac=actOf(a.id),nd=a.required-ac,bc=bCfg(a.brand)||{cls:'b-m'},cls=nd===0?'ok':nd>=2?'crit':'warn';// count WPPs by brand and status for this agent
+var allAgWpps=wpps.filter(function(w){return w.agentId===a.id;});
+var activeWpps=allAgWpps.filter(function(w){return w.status==='ativo';});
+var brandCounts={};
+activeWpps.forEach(function(w){brandCounts[w.brand]=(brandCounts[w.brand]||0)+1;});
+var brandInfo=Object.keys(brandCounts).map(function(b){var bc2=bCfg(b)||{cls:'b-m'};return'<span class="badge '+bc2.cls+'" style="font-size:10px;padding:1px 6px">'+b+': '+brandCounts[b]+'</span>';}).join('');
+if(!brandInfo&&allAgWpps.length>0)brandInfo='<span style="font-size:11px;color:var(--ylw);font-weight:600">'+allAgWpps.length+' WPP'+(allAgWpps.length>1?'s':'')+' (inativos)</span>';
+if(!brandInfo)brandInfo='<span style="font-size:11px;color:var(--sub)">Sem WPPs</span>';
+// dynamic pips based on actual assigned WPPs
+var totalWpps=allAgWpps.length;
+var pipHtml='';
+if(totalWpps>0){for(var pi=0;pi<Math.min(totalWpps,6);pi++){var pw=allAgWpps[pi];var pipCls=pw.status==='ativo'?'on':pw.status==='banido'||pw.status==='suspenso'?'need':'';var pipStyle=pipCls===''?'background:#94a3b8':'';
+pipHtml+='<span class="pip '+pipCls+'" style="'+pipStyle+'" title="'+pw.number+'"></span>';}}
+var cardStatus=activeWpps.length>0?'ok':(allAgWpps.length>0?'warn':'mt');
+return'<div class="acard '+cardStatus+'" onclick="openDPanel('+a.id+')"><div class="ac-av '+avCls(a.id)+'">'+a.initials+'</div><div class="ac-nm">'+a.name+'</div><div class="ac-inf" style="margin-bottom:4px">'+brandInfo+'</div><div class="ac-pips">'+pipHtml+'</div></div>';}).join('');if(cE())grid+='<div class="acard" style="border:1.5px dashed var(--bdr);background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;cursor:pointer;opacity:.7" onclick="openNewAgentForTeam('+tid+')"><div style="width:38px;height:38px;border-radius:10px;background:var(--bg);border:1.5px dashed var(--bdr);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--sub)">+</div><div style="font-size:12px;font-weight:700;color:var(--sub);text-align:center">Novo agente</div></div>';c.innerHTML=grid?'<div class="agent-grid">'+grid+'</div>':'<div class="empty"><p>Sem agentes nesta equipe</p></div>';}}
+function setWASec(k){waSec=k;renderWA();}
+function renderQueue(){const queue=qFn();tx('q-tot',queue.length);tx('q-mer',queue.filter(a=>a.brand==='Meritus').length);tx('q-sav',queue.filter(a=>a.brand==='Savoy').length);const qb=$('cnt-q');if(qb){qb.textContent=queue.length;qb.style.display=queue.length>0?'':'none';}const el=$('q-list');if(!el)return;if(!queue.length){el.innerHTML='<div class="empty"><p>Fila vazia ✓</p><span>Todos os agentes estão completos.</span></div>';return;}el.innerHTML=queue.map((a,i)=>{const rnc=i===0?'r1':i===1?'r2':i===2?'r3':'rx',pct=Math.round((a.active/a.required)*100),bc=bCfg(a.brand)||{cls:'b-m'},tm=gt(a.teamId),avail=avWpp(a.brand);return'<div class="qrow '+(a.needed>=2?'urg':'')+'"><div class="qrn '+rnc+'">'+( i+1)+'</div><div class="ac-av '+avCls(a.id)+'" style="width:36px;height:36px;font-size:12px;border-radius:9px;flex-shrink:0">'+a.initials+'</div><div class="qi-inf"><div class="qi-nm">'+a.name+'</div><div class="qi-det"><span>'+(tm?tm.name:'')+'</span><span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 5px">'+a.brand+'</span><span>'+a.active+'/'+a.required+'</span></div><div class="pb"><div class="pb-f" style="width:'+pct+'%"></div></div></div><div class="qi-rt">'+(a.needed>=2?'<span class="badge b-r"><span class="pd"></span> +'+a.needed+'</span>':'<span class="badge b-y">+'+a.needed+'</span>')+'<div style="margin-top:6px">'+(cE()?'<button class="btn '+(avail?'bbl':'bgh')+'" style="font-size:12px;padding:6px 10px" onclick="openDistModal('+a.id+')">'+(avail?'Distribuir':'Sem estoque')+'</button>':'')+'</div></div></div>';}).join('');}
+function renderDevices(){const sw=devs.filter(d=>d.swap).length;tx('dev-lbl',devs.length+' aparelho'+(devs.length!==1?'s':'')+(sw?' · '+sw+' precisam troca':''));const el=$('dev-list');if(!el)return;if(!devs.length){el.innerHTML='<div class="empty"><p>Nenhum aparelho cadastrado</p></div>';return;}const cL={bom:'Bom',regular:'Regular',defeito:'Com defeito'},cC={bom:'cg',regular:'cy',defeito:'cr'};el.innerHTML=devs.map(d=>{const termTx=d.termsSigned&&d.termsDate?'<span class="badge b-g" style="font-size:10px;padding:2px 6px">✓ Termo '+fmtDate(d.termsDate)+'</span>':'<span class="badge b-r" style="font-size:10px;padding:2px 6px">Sem termo</span>';return'<div class="dev-row '+(d.swap?'swap-f':'')+'"><div style="flex:1;min-width:0"><div class="dev-model">'+d.model+(d.swap?' <span class="badge b-r" style="font-size:10px;vertical-align:middle">⚠ Troca</span>':'')+'</div><div class="dev-meta"><span class="'+(cC[d.condition]||'cg')+'">'+( cL[d.condition]||d.condition)+'</span><span>·</span><span>'+(d.responsible||'Disponível')+'</span><span>·</span>'+termTx+(d.notes?'<span>·</span><span>'+d.notes+'</span>':'')+'</div></div><div style="display:flex;gap:6px;align-items:center">'+(cE()?'<button class="btn '+(d.swap?'bgr':'bgh')+'" style="font-size:11.5px;padding:5px 10px" onclick="toggleSwap('+d.id+')">'+(d.swap?'✓ OK':'Marcar troca')+'</button><button class="bedit" onclick="openEditDevice('+d.id+')">'+editIco+'</button><button class="bdel" onclick="delDev('+d.id+')">'+delIco+'</button>':'')+'</div></div>';}).join('');}
+function renderBrands(){
+  const el=document.getElementById('brands-list'); if(!el) return;
+  if(!brands.length){el.innerHTML='<div class="empty"><p>Nenhuma marca</p></div>';return;}
+  el.innerHTML=brands.map(b=>{
+    const bc=bCfg(b);
+    const inUse=wpps.some(w=>w.brand===b);
+    return'<div class="set-row">'
+      +'<span class="badge '+bc.cls+'" style="font-size:12px;padding:4px 10px">'+b+'</span>'
+      +'<div style="flex:1;padding-left:8px;font-size:11.5px;color:var(--sub)">'
+        +wpps.filter(w=>w.brand===b).length+' chip(s) cadastrado(s)'
+      +'</div>'
+      +(inUse
+        ?'<span style="font-size:11px;color:var(--sub)">em uso</span>'
+        :'<button class="bdel" data-brand="'+b+'" onclick="delBrand(this.dataset.brand)">'+
+          '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>'
+        +'</button>')
+      +'</div>';
+  }).join('');
+}
+function saveBrand(){
+  const nm=document.getElementById('bm-name').value.trim();
+  if(!nm){toast('Informe o nome','err');return;}
+  if(brands.includes(nm)){toast('Marca já existe','err');return;}
+  brands.push(nm);
+  document.getElementById('bm-name').value='';
+  save();renderSettings();renderBrands();closeM('brand-modal');
+  toast(nm+' adicionada!','ok');
+}
+function delBrand(name){
+  if(wpps.some(w=>w.brand===name)){toast('Remova os chips dessa marca antes de excluir','err');return;}
+  if(!confirm('Excluir marca '+name+'?'))return;
+  brands=brands.filter(b=>b!==name);
+  save();renderSettings();renderBrands();
+  toast('Marca excluída','ok');
+}
+function renderSettings(){
+const ee=$('sv-est');if(ee)ee.textContent=pinVis.se?PINS.estagiaria:'••••';const ge=$('sv-gest');if(ge)ge.textContent=pinVis.sg?PINS.gestao:'••••';const tel=$('teams-list');if(tel){if(!teams.length)tel.innerHTML='<div class="empty"><p>Nenhuma equipe</p></div>';else tel.innerHTML=teams.map(t=>{const cnt=agents.filter(a=>a.teamId===t.id).length;return'<div class="set-row"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+t.name+'</div><div style="font-size:11px;color:var(--mut)">'+cnt+' agente'+(cnt!==1?'s':'')+'</div></div><button class="bdel" onclick="delTeam('+t.id+')">'+delIco+'</button></div>';}).join('');}const ael=$('agents-list');if(ael){if(!agents.length)ael.innerHTML='<div class="empty"><p>Nenhum agente</p></div>';else ael.innerHTML=agents.map(a=>{const tm=gt(a.teamId);return'<div class="set-row"><div class="set-av '+avCls(a.id)+'">'+a.initials+'</div><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">'+a.name+'</div><div style="font-size:11px;color:var(--mut);display:flex;gap:6px;flex-wrap:wrap"><span>'+(tm?tm.name:'Sem equipe')+'</span><span>código: '+a.code+'</span></div></div><button class="bedit" onclick="openEditAgent('+a.id+')">'+editIco+'</button><button class="bdel" onclick="delAgent('+a.id+')">'+delIco+'</button></div>';}).join('');}}
+/* TRANSFERÊNCIA DE CHIPS */
+let _transferAgentId = null;
+
+function openWppTransfer(wppId){
+  const w = wpps.find(x=>x.id===wppId); if(!w) return;
+  const fromAgent = w.agentId ? ga(w.agentId) : null;
+  $('wt-wpp-id').value = wppId;
+  tx('wt-number', w.number);
+  const bc = bCfg(w.brand)||{cls:'b-m'};
+  document.getElementById('wt-info').innerHTML =
+    '<span class="badge '+bc.cls+'" style="font-size:10px">'+w.brand+'</span>' +
+    (fromAgent ? ' · De: <strong>'+fromAgent.name+'</strong>' : ' · Estoque');
+  // populate destination agents (exclude current owner)
+  const others = agents.filter(a => a.id !== (w.agentId||0));
+  document.getElementById('wt-dest').innerHTML =
+    '<option value="">→ Devolver ao estoque</option>' +
+    others.map(a=>{
+      const t=gt(a.teamId);
+      return '<option value="'+a.id+'">'+a.name+(t?' ('+t.name+')':'')+'</option>';
+    }).join('');
+  openM('wpp-transfer-modal');
+}
+
+function confirmWppTransfer(){
+  const wppId = parseInt($('wt-wpp-id').value);
+  const destId = parseInt(document.getElementById('wt-dest').value)||null;
+  const w = wpps.find(x=>x.id===wppId); if(!w) return;
+  const fromAgent = w.agentId ? ga(w.agentId) : null;
+  const destAgent = destId ? ga(destId) : null;
+  if(destId && destAgent){
+    w.agentId = destId;
+    w.teamId  = destAgent.teamId;
+    w.status  = 'ativo';
+    logActivity('transferencia',{wppId:w.id,number:w.number,brand:w.brand,
+      fromAgentId:fromAgent?fromAgent.id:null,
+      fromAgentName:fromAgent?fromAgent.name:'Estoque',
+      toAgentId:destId, toAgentName:destAgent.name});
+    toast(w.number+' transferido para '+destAgent.name,'ok');
+  } else {
+    w.agentId = null; w.teamId = null; w.status = 'disponivel';
+    logActivity('devolucao_estoque',{wppId:w.id,number:w.number,brand:w.brand,
+      fromAgentId:fromAgent?fromAgent.id:null,
+      fromAgentName:fromAgent?fromAgent.name:'—'});
+    toast(w.number+' devolvido ao estoque','ok');
+  }
+  closeM('wpp-transfer-modal');
+  save(); renderAll(); if(selAgent) renderDPanel();
+}
+
+function openTransferModal(agentId){
+  const a = ga(agentId); if(!a) return;
+  const myWpps = wpps.filter(w => w.agentId === agentId);
+  if(!myWpps.length){
+    // No chips — delete directly
+    doDeleteAgent(agentId); return;
+  }
+  _transferAgentId = agentId;
+  $('transfer-agent-id').value = agentId;
+  tx('transfer-title','Transferir chips de '+a.name);
+  const otherAgents = agents.filter(x => x.id !== agentId);
+  const agentOptions = '<option value="">→ Devolver ao estoque</option>' +
+    otherAgents.map(x => '<option value="'+x.id+'">→ '+x.name+'</option>').join('');
+  $('transfer-list').innerHTML = myWpps.map(w => {
+    const sc = sCfg[w.status]||{cls:'b-m',lbl:w.status};
+    const bc = bCfg(w.brand)||{cls:'b-m'};
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--bdr);border-radius:10px;margin-bottom:7px">' +
+      '<div style="flex:1"><div style="font-size:13px;font-weight:700">'+w.number+'</div>' +
+      '<div style="font-size:11px;color:var(--mut);margin-top:2px"><span class="badge '+bc.cls+'" style="font-size:10px">'+w.brand+'</span> <span class="badge '+sc.cls+'" style="font-size:10px">'+sc.lbl+'</span></div></div>' +
+      '<select class="fi fi-sm" id="tr-'+w.id+'" style="width:200px">'+agentOptions+'</select>' +
+      '</div>';
+  }).join('');
+  openM('transfer-modal');
+}
+
+function confirmTransfer(){
+  const agentId = parseInt($('transfer-agent-id').value);
+  const myWpps = wpps.filter(w => w.agentId === agentId);
+  myWpps.forEach(w => {
+    const sel = document.getElementById('tr-'+w.id);
+    if(!sel) return;
+    const destId = parseInt(sel.value)||null;
+    if(destId){
+      const dest = ga(destId);
+      w.agentId = destId;
+      w.teamId  = dest ? dest.teamId : null;
+      w.status  = 'ativo';
+      logActivity('transferencia',{wppId:w.id,number:w.number,brand:w.brand,
+        fromAgentId:agentId,toAgentId:destId,toAgentName:dest?dest.name:'—'});
+    } else {
+      w.agentId = null; w.teamId = null; w.status = 'disponivel';
+      logActivity('devolucao_estoque',{wppId:w.id,number:w.number,brand:w.brand,fromAgentId:agentId});
+    }
+  });
+  closeM('transfer-modal');
+  doDeleteAgent(agentId);
+}
+
+function doDeleteAgent(id){
+  const a = ga(id); if(!a) return;
+  agents = agents.filter(x => x.id !== id);
+  save(); renderAll(); toast((a?a.name:'Agente')+' excluído','ok');
+}
+
+/* RELATÓRIO DIÁRIO */
+function renderReport(){
+  const el = $('report-body'); if(!el) return;
+
+  // Date picker default = today
+  let picker = document.getElementById('report-picker');
+  if(!picker){
+    // create picker if not exists (shouldn't happen but safety)
+    return;
+  }
+  if(!picker.value) picker.value = todayDate();
+  const selDate = picker.value;
+
+  const rd = $('report-date');
+  if(rd) rd.textContent = 'Data: '+fmtDate(selDate);
+
+  const dayLog = activityLog.filter(e => e.date === selDate);
+
+  // Counts
+  const cadastros    = dayLog.filter(e => e.type === 'cadastro_estoque');
+  const distribuicoes = dayLog.filter(e => e.type === 'distribuicao');
+  const banidos      = dayLog.filter(e => e.type === 'status_alterado' && e.to === 'banido');
+  const restritos    = dayLog.filter(e => e.type === 'status_alterado' && e.to === 'suspenso');
+  const recuperados  = dayLog.filter(e =>
+    e.type === 'recuperacao' ||
+    (e.type === 'status_alterado' && e.to === 'recuperacao')
+  );
+  const recargas     = dayLog.filter(e => e.type === 'recarga');
+  const transferidos = dayLog.filter(e => e.type === 'transferencia');
+
+  // Distributions grouped by team
+  const byTeam = {};
+  distribuicoes.forEach(e => {
+    const ag = e.agentId ? ga(e.agentId) : null;
+    const tm = ag && ag.teamId ? gt(ag.teamId) : null;
+    const key = tm ? tm.name : (ag ? ag.name : 'Sem equipe');
+    byTeam[key] = (byTeam[key]||0) + 1;
+  });
+
+  // Summary cards
+  const total = cadastros.length + distribuicoes.length + banidos.length + restritos.length + recuperados.length;
+  let h = '';
+
+  if(!total && !recargas.length && !transferidos.length){
+    h = '<div class="empty"><p>Nenhuma atividade registrada nesta data</p><span>As operações aparecem aqui conforme são feitas.</span></div>';
+    el.innerHTML = h;
+    return;
+  }
+
+  // Summary section
+  h += '<div style="background:var(--card);border:1px solid var(--bdr);border-radius:14px;padding:20px 22px;margin-bottom:16px;white-space:pre-line;font-family:monospace;font-size:13px;line-height:1.9;color:var(--txt)" id="report-text-box">';
+  h += generateReportText(selDate, cadastros, byTeam, banidos, restritos, recuperados, recargas, transferidos).replace(/\n/g,'<br>');
+  h += '</div>';
+
+  // Copy button
+  h += '<button class="btn bbl" onclick="copyReport()" style="margin-bottom:20px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>Copiar relatório</button>';
+
+  // Detail log
+  if(dayLog.length){
+    const typeLabel = {
+      cadastro_estoque:'Cadastrado ao estoque',
+      distribuicao:'Distribuído',
+      recuperacao:'Recuperado',
+      recarga:'Recarga registrada',
+      transferencia:'Transferido',
+      devolucao_estoque:'Devolvido ao estoque',
+      status_alterado:'Status alterado'
+    };
+    const typeColor = {
+      cadastro_estoque:'b-b', distribuicao:'b-g', recuperacao:'b-o',
+      recarga:'b-p', transferencia:'b-c', devolucao_estoque:'b-m',
+      status_alterado:'b-y'
+    };
+    h += '<div style="font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:10px">Histórico detalhado</div>';
+    const sorted = [...dayLog].sort((a,b) => b.timestamp.localeCompare(a.timestamp));
+    h += sorted.map(e => {
+      const lbl = e.type === 'status_alterado'
+        ? 'Status: '+(e.from||'?')+' → '+(e.to||'?')
+        : (typeLabel[e.type]||e.type);
+      const cls = typeColor[e.type]||'b-m';
+      const bc  = bCfg(e.brand)||{cls:'b-m'};
+      const ag  = e.agentId ? ga(e.agentId) : null;
+      const tm  = ag && ag.teamId ? gt(ag.teamId) : null;
+      const time = e.timestamp ? new Date(e.timestamp).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'}) : '—';
+      return '<div class="row" style="margin-bottom:6px">'
+        +'<div class="row-main">'
+        +'<div class="row-title">'+(e.number||'—')
+        +'<span class="badge '+(bc.cls)+'" style="font-size:10px;padding:2px 5px">'+(e.brand||'')+'</span>'
+        +'<span class="badge '+cls+'" style="font-size:10px">'+lbl+'</span>'
+        +'</div>'
+        +'<div class="row-sub">'
+        +(ag ? ag.name+(tm?' · '+tm.name:'') : 'Estoque')
+        +' · '+time
+        +'</div>'
+        +'</div></div>';
+    }).join('');
+  }
+
+  el.innerHTML = h;
+}
+
+function generateReportText(date, cadastros, byTeam, banidos, restritos, recuperados, recargas, transferidos){
+  let lines = [];
+  lines.push('📊 Relatório — '+fmtDate(date));
+  lines.push('');
+  if(cadastros.length)
+    lines.push('📥 '+cadastros.length+' chip'+(cadastros.length!==1?'s':'')+' cadastrado'+(cadastros.length!==1?'s':'')+' no estoque');
+  if(Object.keys(byTeam).length){
+    lines.push('📤 Distribuições por equipe:');
+    Object.entries(byTeam).forEach(([tm,n]) =>
+      lines.push('   +'+n+' → '+tm)
+    );
+  }
+  if(banidos.length)
+    lines.push('🚫 '+banidos.length+' report'+(banidos.length!==1?'s':'')+' de WhatsApp banido');
+  if(restritos.length)
+    lines.push('⚠️ '+restritos.length+' report'+(restritos.length!==1?'s':'')+' de WhatsApp restrito');
+  if(recuperados.length)
+    lines.push('🔄 '+recuperados.length+' WhatsApp'+(recuperados.length!==1?'s':'')+' recuperado'+(recuperados.length!==1?'s':''));
+  if(recargas.length)
+    lines.push('🔋 '+recargas.length+' recarga'+(recargas.length!==1?'s':'')+' registrada'+(recargas.length!==1?'s':''));
+  if(transferidos.length)
+    lines.push('↔️ '+transferidos.length+' chip'+(transferidos.length!==1?'s':'')+' transferido'+(transferidos.length!==1?'s':''));
+  if(lines.length === 2)
+    lines.push('Nenhuma atividade registrada.');
+  return lines.join('\n');
+}
+
+function copyReport(){
+  const picker = document.getElementById('report-picker');
+  const selDate = picker ? picker.value : todayDate();
+  const dayLog = activityLog.filter(e => e.date === selDate);
+  const cadastros    = dayLog.filter(e => e.type === 'cadastro_estoque');
+  const distribuicoes = dayLog.filter(e => e.type === 'distribuicao');
+  const banidos      = dayLog.filter(e => e.type === 'status_alterado' && e.to === 'banido');
+  const restritos    = dayLog.filter(e => e.type === 'status_alterado' && e.to === 'suspenso');
+  const recuperados  = dayLog.filter(e => e.type === 'recuperacao' || (e.type === 'status_alterado' && e.to === 'recuperacao'));
+  const recargas     = dayLog.filter(e => e.type === 'recarga');
+  const transferidos = dayLog.filter(e => e.type === 'transferencia');
+  const byTeam = {};
+  distribuicoes.forEach(e => {
+    const ag = e.agentId ? ga(e.agentId) : null;
+    const tm = ag && ag.teamId ? gt(ag.teamId) : null;
+    const key = tm ? tm.name : (ag ? ag.name : 'Sem equipe');
+    byTeam[key] = (byTeam[key]||0) + 1;
+  });
+  const text = generateReportText(selDate, cadastros, byTeam, banidos, restritos, recuperados, recargas, transferidos);
+  navigator.clipboard.writeText(text).then(()=>toast('Relatório copiado!','ok')).catch(()=>{
+    // fallback
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    toast('Relatório copiado!','ok');
+  });
+}
+
+
+function renderAll(){renderDashboard();renderWA();renderQueue();renderDevices();renderSettings();renderReport();}
+/* PANEL */
+function openDPanel(agentId){selAgent=agentId;const a=ga(agentId),tm=gt(a.teamId);const dav=$('dp-av');if(dav){dav.className='d-av '+avCls(a.id);dav.textContent=a.initials;}tx('dp-nm',a.name);tx('dp-info',(tm?tm.name+' · ':'')+a.brand+' · código: '+a.code);const actEl=$('dp-agent-acts');if(actEl)actEl.style.display=cE()?'flex':'none';const eb=$('dp-edit-agent');if(eb)eb.onclick=()=>{closeDPanel();openEditAgent(agentId);};const db=$('dp-del-agent');if(db)db.onclick=()=>{if(confirm('Excluir '+a.name+'?')){closeDPanel();delAgent(agentId);}};renderDPanel();$('d-panel').classList.add('on');$('d-ovl').classList.add('on');}
+function closeDPanel(){$('d-panel').classList.remove('on');$('d-ovl').classList.remove('on');selAgent=null;}
+function renderDPanel(){
+  if(!selAgent) return;
+  const a = ga(selAgent);
+  const mw = wpps.filter(w => w.agentId === a.id);
+  const el = $('dp-body'); if(!el) return;
+  const activeTotal = mw.filter(w => w.status === 'ativo').length;
+  const brandsList = [...new Set([a.brand, ...mw.map(w => w.brand)])];
+  let h = '<div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--mut);margin-bottom:14px">'
+    + mw.length + ' chip' + (mw.length !== 1 ? 's' : '') + ' atribuídos · ' + activeTotal + ' ativo' + (activeTotal !== 1 ? 's' : '')
+    + '</div>';
+
+  brandsList.forEach(brand => {
+    const bw = mw.filter(w => w.brand === brand);
+    const bc = bCfg(brand) || {cls:'b-m'};
+    const req = brand === a.brand ? a.required : 0;
+    const bActive = bw.filter(w => w.status === 'ativo').length;
+    const slots = req ? Math.max(0, req - bActive) : 0;
+    const stockN = wpps.filter(w => w.brand === brand && w.status === 'disponivel').length;
+
+    h += '<div style="margin-bottom:18px">';
+    h += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:7px;border-bottom:1.5px solid var(--bdr)">'
+      + '<span class="badge ' + bc.cls + '">' + brand + '</span>'
+      + (req ? '<span style="font-size:12px;color:var(--mut);font-weight:600">' + bActive + '/' + req + '</span>' : '')
+      + '<span style="flex:1"></span>'
+      + '<span style="font-size:11px;color:var(--sub);font-weight:600">' + stockN + ' no estoque</span>'
+      + '</div>';
+
+    if(!bw.length && !slots){
+      h += '<div style="font-size:12px;color:var(--sub);padding:4px 0">Nenhum WPP desta marca</div>';
+    } else {
+      // WPP rows with 3-dot menu
+      bw.forEach(w => {
+        const sc = sCfg[w.status] || {cls:'b-m', dot:'sd-man', lbl: w.status};
+        const rechDays = w.lastRecharge ? daysSince(w.lastRecharge) : null;
+        const rechAlert = needsRecharge(w);
+        let rechBadge = '';
+        if(w.status === 'ativo'){
+          if(!w.lastRecharge)
+            rechBadge = '<span class="badge b-m" style="font-size:10px;margin-left:4px">Sem recarga</span>';
+          else if(rechAlert)
+            rechBadge = '<span class="badge b-p" style="font-size:10px;margin-left:4px">' + rechDays + 'd vencida</span>';
+          else
+            rechBadge = '<span style="font-size:10px;color:var(--sub);font-weight:600;margin-left:4px">' + (15-rechDays) + 'd restantes</span>';
+        }
+
+        let menu = '';
+        if(cE()){
+          menu = '<div class="wpp-menu">'
+            + '<button class="wpp-menu-btn" data-wid="' + w.id + '" onclick="toggleWppMenu(this)">&#8943;</button>'
+            + '<div class="wpp-dropdown" id="wmenu-' + w.id + '">'
+              + '<button data-wid="' + w.id + '" onclick="closeWppMenus();openRechargeModal(+this.dataset.wid)">🔋 Recarregar</button>'
+              + '<div class="sep"></div>'
+              + '<button data-wid="' + w.id + '" data-st="ativo" onclick="closeWppMenus();setWppStatus(+this.dataset.wid,this.dataset.st)">✅ Ativo</button>'
+              + '<button data-wid="' + w.id + '" data-st="banido" onclick="closeWppMenus();setWppStatus(+this.dataset.wid,this.dataset.st)">🚫 Banido</button>'
+              + '<button data-wid="' + w.id + '" data-st="suspenso" onclick="closeWppMenus();setWppStatus(+this.dataset.wid,this.dataset.st)">⚠️ Restrito</button>'
+              + '<button data-wid="' + w.id + '" data-st="recuperacao" onclick="closeWppMenus();setWppStatus(+this.dataset.wid,this.dataset.st)">🔄 Recuperado</button>'
+              + '<div class="sep"></div>'
+              + '<button data-wid="' + w.id + '" onclick="closeWppMenus();openWppTransfer(+this.dataset.wid)">↔️ Transferir</button>'
+              + '<button class="danger" data-wid="' + w.id + '" onclick="closeWppMenus();delWpp(+this.dataset.wid)">🗑 Excluir</button>'
+            + '</div>'
+          + '</div>';
+        }
+
+        h += '<div class="dwpp ' + (rechAlert ? 'warn' : w.status === 'banido' ? 'crit' : '') + '">'
+          + '<div class="dwpp-num"><span class="sdot ' + sc.dot + '"></span>' + w.number + rechBadge + '</div>'
+          + '<div class="dwpp-acts"><span class="badge ' + sc.cls + '" style="font-size:10px">' + sc.lbl + '</span>' + menu + '</div>'
+          + '</div>';
+      });
+
+      // Empty slots
+      for(let i = 0; i < slots; i++)
+        h += '<div class="slot-e">— slot vazio</div>';
+    }
+
+    // Distribute button
+    if(cE() && (slots > 0 || !req)){
+      const canDist = stockN > 0;
+      h += '<button class="btn ' + (canDist ? 'bbl' : 'bgh') + '" style="width:100%;justify-content:center;margin-top:8px;font-size:12px"'
+        + ' onclick="openDistModalBrand(' + a.id + ',\'' + brand + '\')">'
+        + 'Distribuir chip ' + brand + (canDist ? '' : ' — sem estoque')
+        + '</button>';
+    }
+    h += '</div>';
+  });
+
+  // Other available brands
+  if(cE()){
+    const ob = brands.filter(b => !brandsList.includes(b));
+    if(ob.length){
+      h += '<div style="border-top:1px dashed var(--bdr);padding-top:12px;margin-top:4px">'
+        + '<div style="font-size:11px;color:var(--sub);font-weight:600;margin-bottom:8px">Outras marcas disponíveis</div>';
+      ob.forEach(brand => {
+        const bc = bCfg(brand) || {cls:'b-m'};
+        const sN = wpps.filter(w => w.brand === brand && w.status === 'disponivel').length;
+        if(sN > 0)
+          h += '<button class="btn bgh" style="width:100%;justify-content:center;margin-bottom:6px;font-size:12px"'
+            + ' onclick="openDistModalBrand(' + a.id + ',\'' + brand + '\')">'
+            + '<span class="badge ' + bc.cls + '" style="font-size:10px;padding:1px 6px">' + brand + '</span> '
+            + sN + ' disponível' + (sN !== 1 ? 'is' : '') + ' — Distribuir'
+            + '</button>';
+      });
+      h += '</div>';
+    }
+  }
+
+  el.innerHTML = h;
+}
+
+function newWppForPanel(){if(!selAgent)return;const a=ga(selAgent);openM('wpp-modal');setTimeout(()=>{$('f-brand').value=a.brand;$('f-status').value='ativo';$('f-team').value=a.teamId||'';updateAgentSelect();setTimeout(()=>{$('f-agent').value=a.id;},40);},40);}
+/* DIST */
+function openDistModal(agentId){const a=ga(agentId);if(!a)return;distSt={agentId,wppId:null};tx('dm-agent',a.name);const w=avWpp(a.brand);if(!w){$('dm-nw').style.display='none';$('dm-no').style.display='block';$('dm-ok').style.display='none';}else{distSt.wppId=w.id;$('dm-nw').style.display='block';$('dm-no').style.display='none';$('dm-ok').style.display='block';tx('dm-num',w.number);const bb=$('dm-brand');if(bb){bb.className='badge '+(bCfg(w.brand)?bCfg(w.brand).cls:'b-m');bb.textContent=w.brand;}const n=wpps.filter(x=>x.brand===a.brand&&x.status==='disponivel').length;tx('dm-stock',n+' disponível'+(n!==1?'is':'')+' no estoque');}$('dist-bg').classList.add('on');}
+function openDistModalBrand(agentId,brand){const a=ga(agentId);if(!a)return;distSt={agentId,wppId:null};tx('dm-agent',a.name);const w=wpps.find(x=>x.brand===brand&&x.status==='disponivel');if(!w){$('dm-nw').style.display='none';$('dm-no').style.display='block';$('dm-no').textContent='Nenhum WPP disponível para '+brand+'.';$('dm-ok').style.display='none';}else{distSt.wppId=w.id;$('dm-nw').style.display='block';$('dm-no').style.display='none';$('dm-ok').style.display='block';tx('dm-num',w.number);const bb=$('dm-brand');if(bb){bb.className='badge '+(bCfg(brand)?bCfg(brand).cls:'b-m');bb.textContent=brand;}const n=wpps.filter(x=>x.brand===brand&&x.status==='disponivel').length;tx('dm-stock',n+' disponível'+(n!==1?'is':'')+' no estoque');}$('dist-bg').classList.add('on');}
+function openDistFirst(){const q=qFn();if(!q.length){toast('Fila vazia!','ok');return;}openDistModal(q[0].id);}
+function openDistForWpp(wppId){const w=wpps.find(x=>x.id===wppId);if(!w)return;const q=qFn().filter(a=>a.brand===w.brand);if(!q.length){toast('Nenhum agente de '+w.brand+' na fila','err');return;}distSt={agentId:q[0].id,wppId:w.id};tx('dm-agent',q[0].name);$('dm-nw').style.display='block';$('dm-no').style.display='none';$('dm-ok').style.display='block';tx('dm-num',w.number);const bb=$('dm-brand');if(bb){bb.className='badge '+(bCfg(w.brand)?bCfg(w.brand).cls:'b-m');bb.textContent=w.brand;}const n=wpps.filter(x=>x.brand===w.brand&&x.status==='disponivel').length;tx('dm-stock',n+' disponível'+(n!==1?'is':'')+' no estoque');$('dist-bg').classList.add('on');}
+function confirmDist(){const w=wpps.find(x=>x.id===distSt.wppId),a=ga(distSt.agentId);if(!w||!a)return;w.agentId=a.id;w.teamId=a.teamId;w.status='ativo';
+  logActivity('distribuicao',{wppId:w.id,number:w.number,brand:w.brand,agentId:a.id,agentName:a.name});
+  save();renderAll();if(selAgent===a.id)renderDPanel();closeDist();toast(w.number+' → '+a.name,'ok');}
+function chipProb(){const w=wpps.find(x=>x.id===distSt.wppId);if(!w)return;w.status='manutencao';w.agentId=null;w.teamId=null;save();toast(w.number+' → manutenção','info');const a=ga(distSt.agentId);distSt.wppId=null;const nxt=avWpp(a.brand);if(nxt){distSt.wppId=nxt.id;tx('dm-num',nxt.number);const n=wpps.filter(x=>x.brand===a.brand&&x.status==='disponivel').length;tx('dm-stock',n+' disponível'+(n!==1?'is':'')+' no estoque');renderAll();}else{$('dm-nw').style.display='none';$('dm-no').style.display='block';$('dm-ok').style.display='none';renderAll();toast('Sem mais estoque para '+a.brand,'err');}}
+function closeDist(){$('dist-bg').classList.remove('on');distSt={agentId:null,wppId:null};}
+/* WPP */
+function populateTeamSelect(sid){const s=$(sid);if(!s)return;s.innerHTML='<option value="">Sem equipe</option>'+teams.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('');}
+function updateAgentSelect(){const tid=parseInt($('f-team').value)||0;const s=$('f-agent');if(!s)return;const list=tid?agents.filter(a=>a.teamId===tid):agents;s.innerHTML='<option value="">Sem agente</option>'+list.map(a=>'<option value="'+a.id+'">'+a.name+'</option>').join('');}
+function closeWppModal(){$('f-num').value='';$('f-brand').value='';$('f-notes').value='';$('f-status').value='disponivel';$('f-team').value='';$('f-recharge').value='';updateAgentSelect();closeM('wpp-modal');}
+function addWpp(){const num=$('f-num').value.trim(),brand=$('f-brand').value;if(!num){toast('Informe o número','err');return;}if(!brand){toast('Selecione a marca','err');return;}if(num.replace(/\D/g,'').length<8){toast('Número muito curto','err');return;}const agentId=parseInt($('f-agent').value)||null,teamId=parseInt($('f-team').value)||null;let status=$('f-status').value||'disponivel';if(agentId)status='ativo';const ag=agentId?ga(agentId):null;wpps.push({id:nW++,number:num,brand,status,agentId,teamId:ag?ag.teamId:(teamId||null),notes:$('f-notes').value.trim(),lastRecharge:$('f-recharge').value||''});closeWppModal();
+  logActivity(agentId?'distribuicao':'cadastro_estoque',{
+    wppId:nW-1,number:num,brand,
+    agentId:agentId||null,agentName:ag?ag.name:null
+  });
+  save();renderAll();if(selAgent)renderDPanel();toast(num+(ag?' → '+ag.name:' cadastrado!'),'ok');}
+function markVoltou(wppId){const w=wpps.find(x=>x.id===wppId);if(!w)return;w.status='recuperacao';w.agentId=null;w.teamId=null;
+  logActivity('recuperacao',{wppId:w.id,number:w.number,brand:w.brand});
+  save();renderAll();if(selAgent)renderDPanel();toast(w.number+' em recuperação','ok');}
+function delWpp(id){if(!confirm('Excluir este WPP?'))return;wpps=wpps.filter(w=>w.id!==id);save();renderAll();if(selAgent)renderDPanel();toast('WPP excluído','ok');}
+/* DEVICES */
+function toggleTermsDate(){const w=$('dv-terms-wrap');if(w)w.style.display=$('dv-terms-signed').checked?'block':'none';if(!$('dv-terms-signed').checked&&$('dv-terms'))$('dv-terms').value='';}
+function openNewDevice(){tx('dev-modal-title','Cadastrar Aparelho');$('dv-model').value='';$('dv-cond').value='bom';$('dv-resp').value='';$('dv-terms-signed').checked=false;$('dv-terms').value='';$('dv-terms-wrap').style.display='none';$('dv-notes').value='';$('dv-id').value='';openM('dev-modal');}
+function openEditDevice(id){const d=devs.find(x=>x.id===id);if(!d)return;tx('dev-modal-title','Editar Aparelho');$('dv-model').value=d.model||'';$('dv-cond').value=d.condition||'bom';$('dv-resp').value=d.responsible||'';const ht=!!(d.termsDate);$('dv-terms-signed').checked=ht;$('dv-terms-wrap').style.display=ht?'block':'none';$('dv-terms').value=d.termsDate||'';$('dv-notes').value=d.notes||'';$('dv-id').value=id;openM('dev-modal');}
+function saveDevice(){const model=$('dv-model').value.trim();if(!model){toast('Informe o modelo','err');return;}const signed=$('dv-terms-signed').checked,termsDate=signed?($('dv-terms').value||''):'';if(signed&&!termsDate){toast('Informe a data do termo','err');return;}const data={model,condition:$('dv-cond').value||'bom',responsible:$('dv-resp').value.trim()||'Disponível',termsSigned:signed,termsDate,swap:false,notes:$('dv-notes').value.trim()};const eid=parseInt($('dv-id').value);if(eid){const idx=devs.findIndex(d=>d.id===eid);if(idx>=0){devs[idx]={...devs[idx],...data};toast('Atualizado','ok');}}else{devs.push({id:nD++,...data});toast(model+' cadastrado!','ok');}save();renderDevices();closeM('dev-modal');}
+function toggleSwap(id){const d=devs.find(x=>x.id===id);if(!d)return;d.swap=!d.swap;save();renderDevices();}
+function delDev(id){if(!confirm('Excluir?'))return;devs=devs.filter(d=>d.id!==id);save();renderDevices();toast('Excluído','ok');}
+/* SETTINGS */
+function toggleSysPin(k,role){const vk=k==='est'?'se':'sg';pinVis[vk]=!pinVis[vk];const el=$('sv-'+k);if(el)el.textContent=pinVis[vk]?PINS[role]:'••••';}
+function openPinEdit(role,lbl){editPinCtx={role};tx('pm-t','Alterar PIN — '+lbl);$('pm-p1').value='';$('pm-p2').value='';openM('pin-modal');setTimeout(()=>$('pm-p1').focus(),100);}
+function savePinChange(){const p1=$('pm-p1').value.trim(),p2=$('pm-p2').value.trim();if(p1.length<4){toast('Mínimo 4 caracteres','err');return;}if(p1!==p2){toast('PINs não conferem','err');return;}PINS[editPinCtx.role]=p1;save();renderSettings();closeM('pin-modal');toast('PIN atualizado!','ok');}
+function saveTeam(){const nm=$('tm-name').value.trim();if(!nm){toast('Informe o nome','err');return;}teams.push({id:nTm++,name:nm});$('tm-name').value='';save();renderSettings();renderWA();closeM('team-modal');toast(nm+' criada!','ok');}
+function delTeam(id){if(agents.some(a=>a.teamId===id)){toast('Mova os agentes antes de excluir','err');return;}if(!confirm('Excluir equipe?'))return;teams=teams.filter(t=>t.id!==id);save();renderSettings();renderWA();toast('Equipe excluída','ok');}
+function autoInitials(){$('ag-init').value=genInitials($('ag-name').value);}
+function populateAgTeamSelect(){const s=$('ag-team');if(!s)return;s.innerHTML='<option value="">Sem equipe</option>'+teams.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('');}
+function openNewAgent(){tx('agent-modal-title','Cadastrar Agente');$('ag-name').value='';$('ag-init').value='';$('ag-code').value='';$('ag-id').value='';populateAgTeamSelect();openM('agent-modal');setTimeout(()=>$('ag-name').focus(),100);}
+function openNewAgentForTeam(tid){openNewAgent();setTimeout(()=>{$('ag-team').value=tid||'';},80);}
+function openEditAgent(id){const a=ga(id);if(!a)return;tx('agent-modal-title','Editar Agente');$('ag-name').value=a.name;$('ag-init').value=a.initials;$('ag-code').value=a.code;$('ag-id').value=id;populateAgTeamSelect();setTimeout(()=>{$('ag-team').value=a.teamId||'';},20);openM('agent-modal');}
+function saveAgent(){const name=$('ag-name').value.trim(),inits=($('ag-init').value.trim()||genInitials($('ag-name').value)).toUpperCase(),teamId=parseInt($('ag-team').value)||null,brand='Meritus',req=4,code=$('ag-code').value.trim();if(!name){toast('Informe o nome','err');return;}if(!code){toast('Informe o código','err');return;}const eid=parseInt($('ag-id').value);if(eid){const a=ga(eid);if(!a)return;Object.assign(a,{name,initials:inits,teamId,brand,required:req,code});toast('Agente atualizado','ok');}else{agents.push({id:nAg++,name,initials:inits,teamId,brand,required:req,code});toast(name+' cadastrado!','ok');}save();renderAll();closeM('agent-modal');}
+function delAgent(id){const a=ga(id);if(!a)return;if(!confirm('Excluir '+a.name+'?'))return;openTransferModal(id);}
+/* NAV */
+function nav(id,btn){document.querySelectorAll('.screen').forEach(s=>s.classList.remove('on'));const sc=$(id);if(sc)sc.classList.add('on');document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));if(btn)btn.classList.add('on');else{const nb=document.querySelector('.nb[data-s="'+id+'"]');if(nb)nb.classList.add('on');}const p=pages[id];if(p){tx('pg-t',p.t);tx('pg-s',p.s);}const nw=$('btn-novo-wpp');if(nw)nw.style.display=(id==='whatsapps'&&cE())?'':'none';
+  if(id==='report'){const rp=document.getElementById('report-picker');if(rp&&!rp.value)rp.value=todayDate();renderReport();}
+  closeMob();}
+function openMob(){$('sidebar').classList.add('open');$('ovl').classList.add('on');}
+function closeMob(){$('sidebar').classList.remove('open');$('ovl').classList.remove('on');}
+function openM(id){
+  $(id).classList.add('on');
+  if(id==='wpp-modal'){
+    populateTeamSelect('f-team');
+    updateAgentSelect();
+    const fb=$('f-brand');
+    if(fb) fb.innerHTML='<option value="">Selecionar...</option>'+brands.map(b=>'<option>'+b+'</option>').join('');
+  }
+}
+function closeM(id){$(id).classList.remove('on');}
+function toast(msg,type){const z=$('tz'),d=document.createElement('div');d.className='toast t-'+(type==='ok'?'ok':type==='err'?'err':'info');d.textContent=msg;z.appendChild(d);setTimeout(()=>{d.style.animation='tOut .2s ease forwards';setTimeout(()=>d.remove(),200);},3500);}
+function tick(){const n=new Date();tx('clock',String(n.getHours()).padStart(2,'0')+':'+String(n.getMinutes()).padStart(2,'0')+':'+String(n.getSeconds()).padStart(2,'0'));}
+tick();setInterval(tick,1000);
+document.addEventListener('DOMContentLoaded',()=>{
+  // Restore agent session
+  const savedAgent=sessionStorage.getItem('co_agent');
+  if(savedAgent){load();const a=agents.find(x=>x.id===parseInt(savedAgent));if(a){currentAgent=a;showAgentArea();return;}}
+  const saved=sessionStorage.getItem('co_role');
+  if(saved){
+    loginRole=saved;currentRole=saved;
+    $('lp').style.display='none';$('app').classList.add('on');
+    document.body.classList.toggle('gestao',saved==='gestao');
+    $('ro-tag').style.display=saved==='gestao'?'flex':'none';
+    updateUser();
+    // Load local first for speed, then sync from cloud
+    load(); renderAll();
+    if(syncReady()){
+      syncFromCloud(false).then(()=>{ startSyncInterval(); });
+    }
+  }
+  else{try{const r=localStorage.getItem(SK);if(r){const s=JSON.parse(r);if(s.pins){PINS.estagiaria=s.pins.estagiaria||PINS.estagiaria;PINS.gestao=s.pins.gestao||PINS.gestao;}}}catch(e){}}
+  document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',function(e){if(e.target===this)this.classList.remove('on');}));
+  document.addEventListener('click', function(){closeWppMenus();});
+  $('dist-bg').addEventListener('click',function(e){if(e.target===this)closeDist();});
+  // Auto-save a cada 60 segundos e antes de fechar
+  setInterval(()=>{ if(currentRole) save(); }, 60000);
+  window.addEventListener('beforeunload', ()=>{ if(currentRole) save(); });
+  loadSyncCfg();
+  startSyncInterval();
+});
+
+/* ══ CLOUD SYNC (JSONBin.io) ══ */
+const SYNC_KEY = 'co_sync_cfg';
+// Credenciais de sync embutidas — todos os dispositivos sincronizam automaticamente
+let syncCfg = {
+  apiKey: '$2a$10$v9Jjs.ebJbjJWo91W1/0YeKBWAOocMa.m625go4e3dZkjVelKIv0y',
+  binId:  '6a2871f1f5f4af5e29d42648'
+};
+let syncInterval = null;
+
+function loadSyncCfg(){
+  try{
+    const r=localStorage.getItem(SYNC_KEY);
+    if(r){
+      const saved=JSON.parse(r);
+      // only override if both fields are present
+      if(saved.apiKey&&saved.binId) syncCfg=saved;
+    }
+  }catch(e){}
+  updateSyncDot();
+}
+function updateSyncDot(){
+  const dot=document.getElementById('sync-dot');
+  if(dot) dot.style.background = syncReady() ? '#22d3ee' : '#94a3b8';
+}
+function openDevConfig(){
+  const sk=document.getElementById('sync-key'); if(sk) sk.value=syncCfg.apiKey||'';
+  const sb=document.getElementById('sync-bin'); if(sb) sb.value=syncCfg.binId||'';
+  if(syncReady()){
+    const sc=document.getElementById('sync-status');
+    if(sc){sc.style.display='block';sc.style.background='#dcfce7';sc.style.color='#15803d';sc.textContent='☁️ Sincronização ativa — atualiza a cada 30s';}
+  }
+  openM('dev-modal-cfg');
+}
+function saveSyncConfig(){
+  const key=document.getElementById('sync-key').value.trim();
+  const bin=document.getElementById('sync-bin').value.trim();
+  if(!key||!bin){showSyncStatus('Preencha a API Key e o Bin ID','err');return;}
+  syncCfg={apiKey:key,binId:bin};
+  localStorage.setItem(SYNC_KEY,JSON.stringify(syncCfg));
+  updateSyncDot();
+  showSyncStatus('Configuração salva! Testando conexão...','info');
+  syncFromCloud(true);
+  startSyncInterval();
+}
+function showSyncStatus(msg,type){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  el.style.display='block';
+  el.style.background=type==='ok'?'#dcfce7':type==='err'?'#fee2e2':'#dbeafe';
+  el.style.color=type==='ok'?'#15803d':type==='err'?'#b91c1c':'#1e40af';
+  el.textContent=msg;
+}
+function syncReady(){return syncCfg.apiKey&&syncCfg.binId;}
+
+async function syncToCloud(manual){
+  if(!syncReady()) return;
+  try{
+    const now = new Date().toISOString();
+    const data = {
+      wpps, devs, nW, nD, nAg, nTm,
+      agents: agents.map(a=>({...a})),
+      teams:  teams.map(t=>({...t})),
+      pins:   {...PINS},
+      brands: [...brands],
+      activityLog: activityLog.slice(-500),
+      savedAt: now
+    };
+    lastSyncHash = JSON.stringify({w:data.wpps.length, d:data.devs.length, t:now});
+    const r = await fetch('https://api.jsonbin.io/v3/b/'+syncCfg.binId, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': syncCfg.apiKey,
+        'X-Bin-Versioning': 'false'
+      },
+      body: JSON.stringify(data)
+    });
+    if(r.ok){
+      lastPushedAt = now; // record when we last pushed successfully
+      if(manual) showSyncStatus('✓ Enviado às '+new Date().toLocaleTimeString('pt-BR'),'ok');
+    } else {
+      if(manual) showSyncStatus('Erro ao enviar: '+r.status,'err');
+    }
+  }catch(e){
+    if(manual) showSyncStatus('Erro: '+e.message,'err');
+  }
+}
+
+let lastSyncHash = '';
+let lastPushedAt = '';  // timestamp of last successful push
+
+function applyCloudData(s){
+  if(!s || s.wpps === undefined) return false;
+  // CRITICAL: never apply cloud data that is older than what we last pushed
+  if(lastPushedAt && s.savedAt && s.savedAt < lastPushedAt) return false;
+  const hash = JSON.stringify({w:s.wpps.length, d:(s.devs||[]).length, t:s.savedAt});
+  if(hash === lastSyncHash) return false; // no change
+  lastSyncHash = hash;
+  wpps = s.wpps || [];
+  devs = s.devs || [];
+  nW=s.nW||nW; nD=s.nD||nD; nAg=s.nAg||nAg; nTm=s.nTm||nTm;
+  if(s.agents && s.agents.length) agents.splice(0, agents.length, ...s.agents);
+  if(s.teams  && s.teams.length)  teams.splice(0,  teams.length,  ...s.teams);
+  if(s.pins){
+    PINS.estagiaria = s.pins.estagiaria || PINS.estagiaria;
+    PINS.gestao     = s.pins.gestao     || PINS.gestao;
+  }
+  if(s.activityLog) activityLog=s.activityLog;
+  if(s.brands&&s.brands.length) brands=s.brands;
+  localStorage.setItem(SK, JSON.stringify(s));
+  // Critical: update lastPushedAt so we don't push stale data over what we just received
+  if(s.savedAt) lastPushedAt = s.savedAt;
+  if(currentRole) renderAll();
+  return true;
+}
+
+async function syncFromCloud(manual){
+  if(!syncReady()) return;
+  try{
+    const r = await fetch('https://api.jsonbin.io/v3/b/'+syncCfg.binId+'/latest',{
+      headers:{'X-Master-Key':syncCfg.apiKey,'X-Bin-Meta':'false'}
+    });
+    if(r.ok){
+      const s = await r.json();
+      if(s && s.wpps !== undefined){
+        const changed = applyCloudData(s);
+        if(manual) showSyncStatus('✓ Sincronizado'+(changed?' — atualizado':' — sem mudanças')+' às '+new Date().toLocaleTimeString('pt-BR'),'ok');
+      } else {
+        if(manual) showSyncStatus('Nuvem vazia — acesse o app na máquina da estagiária primeiro','info');
+      }
+    } else {
+      if(manual) showSyncStatus('Erro '+r.status,'err');
+    }
+  }catch(e){
+    if(manual) showSyncStatus('Erro: '+e.message,'err');
+  }
+}
+
+function startSyncInterval(){
+  if(syncInterval) clearInterval(syncInterval);
+  if(!syncReady()) return;
+  // sync from cloud every 30 seconds
+  syncInterval=setInterval(async ()=>{
+    if(currentRole) await syncFromCloud(false);
+  },8000);
+}
+
+// sync happens via syncToCloud called directly after save()
+
+
+/* AGENT PORTAL */
+var currentAgent = null;
+
+function showAgentLogin() {
+  document.getElementById('lp').style.display = 'none';
+  var alp = document.getElementById('agent-lp');
+  alp.style.display = 'flex';
+  var sel = document.getElementById('al-agent');
+  var opts = '<option value="">Selecionar agente...</option>';
+  for (var i = 0; i < agents.length; i++) {
+    opts += '<option value="' + agents[i].id + '">' + agents[i].name + '</option>';
+  }
+  sel.innerHTML = opts;
+  document.getElementById('al-code').value = '';
+  document.getElementById('al-err').style.display = 'none';
+}
+function showMainLogin() {
+  document.getElementById('agent-lp').style.display = 'none';
+  document.getElementById('agent-area').style.display = 'none';
+  document.getElementById('lp').style.display = 'flex';
+  currentAgent = null;
+  sessionStorage.removeItem('co_agent');
+}
+function agentLogin() {
+  var agentId = parseInt(document.getElementById('al-agent').value);
+  var code = document.getElementById('al-code').value.trim();
+  if (!agentId) { showAgentErr('Selecione seu nome.'); return; }
+  var a = null;
+  for (var i = 0; i < agents.length; i++) { if (agents[i].id === agentId) { a = agents[i]; break; } }
+  if (!a || a.code !== code) { showAgentErr('Código incorreto. Verifique com a estagiária.'); return; }
+  currentAgent = a;
+  sessionStorage.setItem('co_agent', agentId);
+  document.getElementById('agent-lp').style.display = 'none';
+  showAgentArea();
+}
+function showAgentErr(msg) { var e = document.getElementById('al-err'); e.textContent = msg; e.style.display = 'block'; }
+function agentLogout() {
+  currentAgent = null; sessionStorage.removeItem('co_agent');
+  document.getElementById('agent-area').style.display = 'none';
+  document.getElementById('lp').style.display = 'flex';
+}
+var agGrad = ['linear-gradient(135deg,#1d4ed8,#06b6d4)','linear-gradient(135deg,#7c3aed,#3b82f6)','linear-gradient(135deg,#059669,#10b981)','linear-gradient(135deg,#dc2626,#f97316)','linear-gradient(135deg,#0f1f3d,#1d4ed8)','linear-gradient(135deg,#d97706,#f59e0b)'];
+function showAgentArea() {
+  if (!currentAgent) return;
+  var a = currentAgent, tm = gt(a.teamId);
+  var av = document.getElementById('aa-av');
+  if (av) { av.style.background = agGrad[a.id % 6]; av.textContent = a.initials; }
+  tx('aa-name', a.name);
+  tx('aa-sub', (tm ? tm.name + ' · ' : '') + 'código: ' + a.code);
+  document.getElementById('agent-area').style.display = 'flex';
+  renderAgentWpps();
+}
+function renderAgentWpps() {
+  if (!currentAgent) return;
+  var mine = wpps.filter(function(w){ return w.agentId === currentAgent.id; });
+  var el = document.getElementById('aa-wpps'); if (!el) return;
+  var cnt = document.getElementById('aa-cnt'); if (cnt) cnt.textContent = mine.length;
+  if (!mine.length) { el.innerHTML = '<div style="border:1.5px dashed rgba(255,255,255,.15);border-radius:14px;padding:32px;text-align:center"><p style="color:rgba(255,255,255,.6);font-weight:700">Nenhum WPP atribuído</p><span style="font-size:12px;color:rgba(255,255,255,.3)">Aguarde a estagiária distribuir.</span></div>'; return; }
+  var lblMap = {disponivel:'Disponível',ativo:'Ativo',banido:'Banido',suspenso:'Suspenso',recuperacao:'Em recuperação',reserva:'Reserva',manutencao:'Manutenção'};
+  var clsMap = {disponivel:'b-b',ativo:'b-g',banido:'b-r',suspenso:'b-y',recuperacao:'b-o',reserva:'b-c',manutencao:'b-m'};
+  var dotMap = {disponivel:'sd-av',ativo:'sd-on',banido:'sd-ban',suspenso:'sd-sup',recuperacao:'sd-rc',reserva:'sd-rs',manutencao:'sd-man'};
+  var html = '';
+  for (var j = 0; j < mine.length; j++) {
+    var w = mine[j];
+    var lbl = lblMap[w.status] || w.status;
+    var cls = clsMap[w.status] || 'b-m';
+    var dot = dotMap[w.status] || 'sd-man';
+    var bc = w.status==='banido'?'#fecaca':w.status==='suspenso'?'#fde68a':'rgba(255,255,255,.15)';
+    var bg = w.status==='banido'?'rgba(220,38,38,.1)':w.status==='suspenso'?'rgba(202,138,4,.08)':'rgba(255,255,255,.05)';
+    html += '<div style="border:1.5px solid '+bc+';background:'+bg+';border-radius:14px;padding:16px;margin-bottom:10px">';
+    html += '<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">';
+    html += '<span class="sdot '+dot+'"></span>';
+    html += '<span style="font-size:16px;font-weight:800;color:#fff;flex:1;font-variant-numeric:tabular-nums">'+w.number+'</span>';
+    html += '<span class="badge '+cls+'">'+lbl+'</span></div>';
+    html += '<div style="display:flex;gap:8px;flex-wrap:wrap">';
+    if (w.status === 'ativo') {
+      html += '<button data-id="'+w.id+'" data-st="banido" onclick="agentChangeStatus(this)" style="padding:7px 14px;border:1px solid #fca5a5;border-radius:9px;background:rgba(220,38,38,.2);color:#fca5a5;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">Banido</button>';
+      html += '<button data-id="'+w.id+'" data-st="suspenso" onclick="agentChangeStatus(this)" style="padding:7px 14px;border:1px solid #fde68a;border-radius:9px;background:rgba(202,138,4,.15);color:#fde68a;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">Suspenso</button>';
+    } else if (w.status === 'banido' || w.status === 'suspenso') {
+      html += '<button data-id="'+w.id+'" onclick="agentVoltou(this)" style="padding:7px 14px;border:1px solid #86efac;border-radius:9px;background:rgba(22,163,74,.2);color:#86efac;font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit">Voltou!</button>';
+    } else {
+      html += '<span style="font-size:12px;color:rgba(255,255,255,.3);font-weight:600">Aguardando operação</span>';
+    }
+    html += '</div></div>';
+  }
+  el.innerHTML = html;
+}
+function agentChangeStatus(btn) {
+  var wppId = parseInt(btn.getAttribute('data-id'));
+  var status = btn.getAttribute('data-st');
+  var w = wpps.find(function(x){ return x.id === wppId; });
+  if (!w || !confirm('Marcar como '+status+'?')) return;
+  w.status = status; save(); renderAll(); renderAgentWpps();
+  toast(w.number+' marcado como '+status,'info');
+}
+function agentVoltou(btn) {
+  var wppId = parseInt(btn.getAttribute('data-id'));
+  var w = wpps.find(function(x){ return x.id === wppId; });
+  if (!w) return;
+  w.status='recuperacao'; w.agentId=null; w.teamId=null;
+  save(); renderAll(); renderAgentWpps();
+  toast(w.number+' em recuperação','ok');
+}
+
+</script>
+</body>
+</html>
