@@ -838,6 +838,7 @@ function delBrand(name){
   toast('Marca excluída','ok');
 }
 function renderSettings(){
+  renderBrands();
 const ee=$('sv-est');if(ee)ee.textContent=pinVis.se?PINS.estagiaria:'••••';const ge=$('sv-gest');if(ge)ge.textContent=pinVis.sg?PINS.gestao:'••••';const tel=$('teams-list');if(tel){if(!teams.length)tel.innerHTML='<div class="empty"><p>Nenhuma equipe</p></div>';else tel.innerHTML=teams.map(t=>{const cnt=agents.filter(a=>a.teamId===t.id).length;return'<div class="set-row"><div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:700">'+t.name+'</div><div style="font-size:11px;color:var(--mut)">'+cnt+' agente'+(cnt!==1?'s':'')+'</div></div><button class="bdel" onclick="delTeam('+t.id+')">'+delIco+'</button></div>';}).join('');}const ael=$('agents-list');if(ael){if(!agents.length)ael.innerHTML='<div class="empty"><p>Nenhum agente</p></div>';else ael.innerHTML=agents.map(a=>{const tm=gt(a.teamId);return'<div class="set-row"><div class="set-av '+avCls(a.id)+'">'+a.initials+'</div><div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700">'+a.name+'</div><div style="font-size:11px;color:var(--mut);display:flex;gap:6px;flex-wrap:wrap"><span>'+(tm?tm.name:'Sem equipe')+'</span><span>código: '+a.code+'</span></div></div><button class="bedit" onclick="openEditAgent('+a.id+')">'+editIco+'</button><button class="bdel" onclick="delAgent('+a.id+')">'+delIco+'</button></div>';}).join('');}}
 /* TRANSFERÊNCIA DE CHIPS */
 let _transferAgentId = null;
