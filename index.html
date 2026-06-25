@@ -1316,14 +1316,8 @@ let syncCfg = {
 let syncInterval = null;
 
 function loadSyncCfg(){
-  try{
-    const r=localStorage.getItem(SYNC_KEY);
-    if(r){
-      const saved=JSON.parse(r);
-      // only override if both fields are present
-      if(saved.apiKey&&saved.binId) syncCfg=saved;
-    }
-  }catch(e){}
+  // Hardcoded credentials always win — clear any stale localStorage config
+  localStorage.removeItem(SYNC_KEY);
   updateSyncDot();
 }
 function updateSyncDot(){
