@@ -558,7 +558,19 @@ function logActivity(type,data){
   activityLog=activityLog.filter(e=>e.date>=cs);
 }
 function daysSince(dateStr){if(!dateStr)return null;const d=new Date(dateStr),t=new Date();t.setHours(0,0,0,0);d.setHours(0,0,0,0);return Math.floor((t-d)/(1000*60*60*24));}
-function needsRecharge(w){if(w.status!=='ativo'||!w.lastRecharge)return false;return daysSince(w.lastRecharge)>=15;}
+function needsRecharge(w){
+  if(w.status!=='ativo' || !w.lastRecharge) return false;
+  const count = w.rechargeCount||1;
+  // 1ª recarga dura 15 dias, recargas seguintes duram 30 dias
+  const limit = count <= 1 ? 15 : 30;
+  return daysSince(w.lastRecharge) >= limit;
+}
+function rechargeDaysLeft(w){
+  if(!w.lastRecharge) return null;
+  const count = w.rechargeCount||1;
+  const limit = count <= 1 ? 15 : 30;
+  return limit - (daysSince(w.lastRecharge)||0);
+}
 function todayStr(){return new Date().toISOString().split('T')[0];}
 function toggleWppMenu(btn){
   event.stopPropagation();
@@ -591,6 +603,7 @@ function confirmRecharge(){
   if(!date){toast('Selecione a data','err');return;}
   const w=wpps.find(x=>x.id===wppId); if(!w)return;
   w.lastRecharge=date;
+  w.rechargeCount=(w.rechargeCount||0)+1;
   logActivity('recarga',{wppId:w.id,number:w.number,brand:w.brand,date});
   save(); renderAll(); if(selAgent)renderDPanel();
   closeM('rech-modal'); toast(w.number+' — recarga registrada!','ok');
@@ -758,7 +771,7 @@ function renderDashboard(){
       return '<div class="row"><div class="row-main">'
         +'<div class="row-title">'+w.number
         +'<span class="badge '+bc.cls+'" style="font-size:10px;padding:2px 6px">'+w.brand+'</span></div>'
-        +'<div class="row-sub">'+(ag?ag.name+(gt(ag.teamId)?' · '+gt(ag.teamId).name:''):' Estoque')+'</div>'
+        +'<div class="row-sub">'+(ag?ag.name+(gt(ag.teamId)?' · '+gt(ag.teamId).name:''):' Estoque')+(w.createdAt?' · Cadastrado em '+fmtDate(w.createdAt):'')+'</div>'
         +'</div><div class="row-acts">'
         +(cE()?'<button class="btn" style="background:#7c3aed;color:#fff;font-size:12px;padding:6px 12px" onclick="openRechargeModal('+w.id+')">Registrar recarga</button>':'')
         +'</div></div>';
@@ -1141,12 +1154,18 @@ function renderDPanel(){
         const rechAlert = needsRecharge(w);
         let rechBadge = '';
         if(w.status === 'ativo'){
-          if(!w.lastRecharge)
-            rechBadge = '<span class="badge b-m" style="font-size:10px;margin-left:4px">Sem recarga</span>';
-          else if(rechAlert)
+          if(!w.lastRecharge){
+            var dCad = w.createdAt ? daysSince(w.createdAt) : null;
+            if(rechAlert)
+              rechBadge = '<span class="badge b-p" style="font-size:10px;margin-left:4px">🔋 1ª recarga vencida</span>';
+            else if(dCad !== null)
+              rechBadge = '<span style="font-size:10px;color:var(--sub);font-weight:600;margin-left:4px">🔋 1ª recarga em '+(15-dCad)+'d</span>';
+            else
+              rechBadge = '<span class="badge b-m" style="font-size:10px;margin-left:4px">Sem recarga</span>';
+          } else if(rechAlert)
             rechBadge = '<span class="badge b-p" style="font-size:10px;margin-left:4px">' + rechDays + 'd vencida</span>';
           else
-            rechBadge = '<span style="font-size:10px;color:var(--sub);font-weight:600;margin-left:4px">' + (15-rechDays) + 'd restantes</span>';
+            rechBadge = '<span style="font-size:10px;color:var(--sub);font-weight:600;margin-left:4px">' + (30-rechDays) + 'd restantes</span>';
         }
 
         let menu = '';
@@ -1227,7 +1246,7 @@ function closeDist(){$('dist-bg').classList.remove('on');distSt={agentId:null,wp
 function populateTeamSelect(sid){const s=$(sid);if(!s)return;s.innerHTML='<option value="">Sem equipe</option>'+teams.map(t=>'<option value="'+t.id+'">'+t.name+'</option>').join('');}
 function updateAgentSelect(){const tid=parseInt($('f-team').value)||0;const s=$('f-agent');if(!s)return;const list=tid?agents.filter(a=>a.teamId===tid):agents;s.innerHTML='<option value="">Sem agente</option>'+list.map(a=>'<option value="'+a.id+'">'+a.name+'</option>').join('');}
 function closeWppModal(){$('f-num').value='';$('f-brand').value='';$('f-notes').value='';$('f-status').value='disponivel';$('f-team').value='';$('f-recharge').value='';updateAgentSelect();closeM('wpp-modal');}
-function addWpp(){const num=$('f-num').value.trim(),brand=$('f-brand').value;if(!num){toast('Informe o número','err');return;}if(!brand){toast('Selecione a marca','err');return;}if(num.replace(/\D/g,'').length<8){toast('Número muito curto','err');return;}const agentId=parseInt($('f-agent').value)||null,teamId=parseInt($('f-team').value)||null;let status=$('f-status').value||'disponivel';if(agentId)status='ativo';const ag=agentId?ga(agentId):null;wpps.push({id:nW++,number:num,brand,status,agentId,teamId:ag?ag.teamId:(teamId||null),notes:$('f-notes').value.trim(),lastRecharge:$('f-recharge').value||''});closeWppModal();
+function addWpp(){const num=$('f-num').value.trim(),brand=$('f-brand').value;if(!num){toast('Informe o número','err');return;}if(!brand){toast('Selecione a marca','err');return;}if(num.replace(/\D/g,'').length<8){toast('Número muito curto','err');return;}const agentId=parseInt($('f-agent').value)||null,teamId=parseInt($('f-team').value)||null;let status=$('f-status').value||'disponivel';if(agentId)status='ativo';const ag=agentId?ga(agentId):null;const initRecharge=$('f-recharge').value||'';wpps.push({id:nW++,number:num,brand,status,agentId,teamId:ag?ag.teamId:(teamId||null),notes:$('f-notes').value.trim(),lastRecharge:initRecharge,rechargeCount:initRecharge?1:0,createdAt:todayDate()});closeWppModal();
   logActivity(agentId?'distribuicao':'cadastro_estoque',{
     wppId:nW-1,number:num,brand,
     agentId:agentId||null,agentName:ag?ag.name:null
