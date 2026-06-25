@@ -680,8 +680,6 @@ function doLogin(){if(!loginRole){toast('Selecione um perfil','err');return;}con
   if(syncReady()){
     // Pull from cloud FIRST — only push if local data is newer
     syncFromCloud(false).then(()=>{
-      // After pulling, save local state only if we have real data
-      if(wpps.length>0||devs.length>0) save();
       startSyncInterval();
     });
   } else {
@@ -1371,7 +1369,6 @@ async function syncToCloud(manual){
       activityLog: activityLog.slice(-500),
       savedAt: now
     };
-    lastSyncHash = JSON.stringify({w:data.wpps.length, d:data.devs.length, t:now});
     const r = await fetch('https://api.jsonbin.io/v3/b/'+syncCfg.binId, {
       method: 'PUT',
       headers: {
@@ -1382,7 +1379,8 @@ async function syncToCloud(manual){
       body: JSON.stringify(data)
     });
     if(r.ok){
-      lastPushedAt = now; // record when we last pushed successfully
+      lastPushedAt = now;
+      lastSyncHash = now; // mark so we don't re-apply our own push
       if(manual) showSyncStatus('✓ Enviado às '+new Date().toLocaleTimeString('pt-BR'),'ok');
     } else {
       if(manual) showSyncStatus('Erro ao enviar: '+r.status,'err');
@@ -1397,25 +1395,20 @@ let lastPushedAt = '';  // timestamp of last successful push
 
 function applyCloudData(s){
   if(!s || s.wpps === undefined) return false;
-  // CRITICAL: never apply cloud data that is older than what we last pushed
-  if(lastPushedAt && s.savedAt && s.savedAt < lastPushedAt) return false;
-  const hash = JSON.stringify({w:s.wpps.length, d:(s.devs||[]).length, t:s.savedAt});
-  if(hash === lastSyncHash) return false; // no change
-  lastSyncHash = hash;
+  // Only skip if savedAt is exactly what we just pushed (our own data coming back)
+  if(s.savedAt && s.savedAt === lastPushedAt) return false;
+  // Use savedAt as the main change detector
+  if(s.savedAt && s.savedAt === lastSyncHash) return false;
+  lastSyncHash = s.savedAt || '';
   wpps = s.wpps || [];
   devs = s.devs || [];
   nW=s.nW||nW; nD=s.nD||nD; nAg=s.nAg||nAg; nTm=s.nTm||nTm;
   if(s.agents && s.agents.length) agents.splice(0, agents.length, ...s.agents);
   if(s.teams  && s.teams.length)  teams.splice(0,  teams.length,  ...s.teams);
-  if(s.pins){
-    PINS.estagiaria = s.pins.estagiaria || PINS.estagiaria;
-    PINS.gestao     = s.pins.gestao     || PINS.gestao;
-  }
+  if(s.pins){PINS.estagiaria=s.pins.estagiaria||PINS.estagiaria;PINS.gestao=s.pins.gestao||PINS.gestao;}
   if(s.activityLog) activityLog=s.activityLog;
   if(s.brands&&s.brands.length) brands=s.brands;
   localStorage.setItem(SK, JSON.stringify(s));
-  // Critical: update lastPushedAt so we don't push stale data over what we just received
-  if(s.savedAt) lastPushedAt = s.savedAt;
   if(currentRole) renderAll();
   return true;
 }
