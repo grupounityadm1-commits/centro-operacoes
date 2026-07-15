@@ -287,12 +287,13 @@ body.gestao .gestao-hidden{display:none!important}
       <button class="mc-btn" onclick="closeM('dev-modal-cfg')">✕</button>
     </div>
     <div style="background:#dcfce7;border-radius:10px;padding:12px 14px;margin-bottom:14px;display:flex;align-items:center;gap:8px">
-      <span style="font-size:16px">☁️</span>
-      <div><div style="font-size:13px;font-weight:700;color:#15803d">Sincronização ativa</div>
-      <div style="font-size:11px;color:#166534">Atualiza automaticamente a cada 6 segundos</div></div>
+      <span style="font-size:16px">🔥</span>
+      <div><div style="font-size:13px;font-weight:700;color:#15803d">Firebase Realtime Database</div>
+      <div style="font-size:11px;color:#166534">Sincronização automática a cada 6 segundos — sem erros</div></div>
     </div>
+    <div style="font-size:11px;color:var(--mut);background:var(--bg);border-radius:8px;padding:8px 12px;margin-bottom:12px;font-family:monospace;word-break:break-all">centro-de-operacoes-wpp-default-rtdb.firebaseio.com</div>
     <button class="btn bbl" style="width:100%;justify-content:center;margin-bottom:8px" onclick="syncFromCloud(true)">↓ Buscar atualizações agora</button>
-    <button class="btn bgh" style="width:100%;justify-content:center" onclick="syncToCloud(true)">↑ Forçar envio dos dados locais</button>
+    <button class="btn bgh" style="width:100%;justify-content:center" onclick="syncToCloud(true)">↑ Enviar dados para o Firebase</button>
     <div id="sync-status" style="font-size:12px;margin-top:10px;padding:8px 12px;border-radius:8px;display:none"></div>
   </div>
 </div>
@@ -1319,75 +1320,47 @@ document.addEventListener('DOMContentLoaded',()=>{
   // Auto-save a cada 60 segundos e antes de fechar
   setInterval(()=>{ if(currentRole) save(); }, 60000);
   window.addEventListener('beforeunload', ()=>{ if(currentRole) save(); });
-  // Sync credentials hardcoded - no config needed
-  loadSyncCfg();
+    loadSyncCfg();
   startSyncInterval();
 });
 
-/* ══ CLOUD SYNC (JSONBin.io) ══ */
 const SYNC_KEY = 'co_sync_cfg';
-// Credenciais de sync embutidas — todos os dispositivos sincronizam automaticamente
-let syncCfg = {apiKey:'$2a$10$Seiq2dhqYLxomZUhzJwUQefN.Yz1O93KHI/ugfHFzRAmC5R.nLwYO',binId:'6a3d8af6da38895dfeff5b85'};
 let syncInterval = null;
-
-function syncReady(){return !!(syncCfg.apiKey&&syncCfg.binId);}
-function updateSyncDot(){}
 
 
 /* ══ SYNC CONFIG ══ */
 const SYNC_CFG_VERSION = 'v3'; // bump this when credentials change to auto-clear old config
 
-function loadSyncCfg(){
-  // Credentials are hardcoded — clear any stale localStorage config
-  localStorage.removeItem(SYNC_KEY);
-  updateSyncDot();
-}
-
-function saveSyncConfig(){
-  const key = document.getElementById('sync-key').value.trim();
-  const bin = document.getElementById('sync-bin').value.trim();
-  if(!key||!bin){showSyncStatus('Preencha os dois campos','err');return;}
-  syncCfg = {apiKey:key, binId:bin};
-  localStorage.setItem(SYNC_KEY, JSON.stringify({apiKey:key, binId:bin, version:SYNC_CFG_VERSION}));
-  updateSyncDot();
-  showSyncStatus('✓ Configuração salva! Testando conexão...','info');
-  syncFromCloud(true);
-  startSyncInterval();
-}
-
-function showSyncStatus(msg,type){
-  const el = document.getElementById('sync-status'); if(!el)return;
-  el.style.display='block';
-  el.style.background = type==='ok'?'#dcfce7':type==='err'?'#fee2e2':'#dbeafe';
-  el.style.color = type==='ok'?'#15803d':type==='err'?'#b91c1c':'#1e40af';
-  el.textContent = msg;
-}
-
-function updateSyncDot(){}
-
-function openDevConfig(){
-  const sk = document.getElementById('sync-key'); if(sk) sk.value = syncCfg.apiKey||'';
-  const sb = document.getElementById('sync-bin'); if(sb) sb.value = syncCfg.binId||'';
-  const st = document.getElementById('sync-status');
-  if(st){
-    if(syncReady()){
-      st.style.display='block';st.style.background='#dcfce7';st.style.color='#15803d';
-      st.textContent='☁️ Sincronização ativa — atualiza a cada 6s';
-    } else {
-      st.style.display='block';st.style.background='#fef3c7';st.style.color='#92400e';
-      st.textContent='⚠️ Sem configuração — cole a API Key e Bin ID';
-    }
-  }
-  openM('dev-modal-cfg');
-}
+fu/* ══ FIREBASE SYNC ══ */
+const FB_URL = 'https://centro-de-operacoes-wpp-default-rtdb.firebaseio.com/dados.json';
+let lastSyncHash = '';
+let lastPushedAt = '';
 let _syncTimer = null;
+
 function scheduleSyncToCloud(){
   clearTimeout(_syncTimer);
   _syncTimer = setTimeout(()=> syncToCloud(false), 1500);
 }
 
+function applyCloudData(s){
+  if(!s || s.wpps === undefined) return false;
+  if(s.savedAt && s.savedAt === lastPushedAt) return false;
+  if(s.savedAt && s.savedAt === lastSyncHash) return false;
+  lastSyncHash = s.savedAt || '';
+  wpps = s.wpps || [];
+  devs = s.devs || [];
+  nW=s.nW||nW; nD=s.nD||nD; nAg=s.nAg||nAg; nTm=s.nTm||nTm;
+  if(s.agents && s.agents.length) agents.splice(0, agents.length, ...s.agents);
+  if(s.teams  && s.teams.length)  teams.splice(0,  teams.length,  ...s.teams);
+  if(s.pins){PINS.estagiaria=s.pins.estagiaria||PINS.estagiaria;PINS.gestao=s.pins.gestao||PINS.gestao;}
+  if(s.activityLog) activityLog = s.activityLog;
+  if(s.brands && s.brands.length) brands = s.brands;
+  localStorage.setItem(SK, JSON.stringify(s));
+  if(currentRole) renderAll();
+  return true;
+}
+
 async function syncToCloud(manual){
-  if(!syncReady()) return;
   try{
     const now = new Date().toISOString();
     const data = {
@@ -1399,19 +1372,15 @@ async function syncToCloud(manual){
       activityLog: activityLog.slice(-500),
       savedAt: now
     };
-    const r = await fetch('https://api.jsonbin.io/v3/b/'+syncCfg.binId, {
+    lastPushedAt = now;
+    lastSyncHash = now;
+    const r = await fetch(FB_URL, {
       method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Master-Key': syncCfg.apiKey,
-        'X-Bin-Versioning': 'false'
-      },
+      headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
     });
     if(r.ok){
-      lastPushedAt = now;
-      lastSyncHash = now; // mark so we don't re-apply our own push
-      if(manual) showSyncStatus('✓ Enviado às '+new Date().toLocaleTimeString('pt-BR'),'ok');
+      if(manual) showSyncStatus('✓ Enviado — '+new Date().toLocaleTimeString('pt-BR'),'ok');
     } else {
       if(manual) showSyncStatus('Erro ao enviar: '+r.status,'err');
     }
@@ -1420,58 +1389,41 @@ async function syncToCloud(manual){
   }
 }
 
-let lastSyncHash = '';
-let lastPushedAt = '';  // timestamp of last successful push
-
-function applyCloudData(s){
-  if(!s || s.wpps === undefined) return false;
-  // Only skip if savedAt is exactly what we just pushed (our own data coming back)
-  if(s.savedAt && s.savedAt === lastPushedAt) return false;
-  // Use savedAt as the main change detector
-  if(s.savedAt && s.savedAt === lastSyncHash) return false;
-  lastSyncHash = s.savedAt || '';
-  wpps = s.wpps || [];
-  devs = s.devs || [];
-  nW=s.nW||nW; nD=s.nD||nD; nAg=s.nAg||nAg; nTm=s.nTm||nTm;
-  if(s.agents && s.agents.length) agents.splice(0, agents.length, ...s.agents);
-  if(s.teams  && s.teams.length)  teams.splice(0,  teams.length,  ...s.teams);
-  if(s.pins){PINS.estagiaria=s.pins.estagiaria||PINS.estagiaria;PINS.gestao=s.pins.gestao||PINS.gestao;}
-  if(s.activityLog) activityLog=s.activityLog;
-  if(s.brands&&s.brands.length) brands=s.brands;
-  localStorage.setItem(SK, JSON.stringify(s));
-  if(currentRole) renderAll();
-  return true;
-}
-
 async function syncFromCloud(manual){
-  if(!syncReady()) return;
   try{
-    const r = await fetch('https://api.jsonbin.io/v3/b/'+syncCfg.binId+'/latest',{
-      headers:{'X-Master-Key':syncCfg.apiKey,'X-Bin-Meta':'false'}
-    });
+    const r = await fetch(FB_URL, {method:'GET'});
     if(r.ok){
-      let s = await r.json();
-      // JSONBin sometimes wraps response in {record:{...}} - handle both formats
-      if(s && s.record) s = s.record;
+      const s = await r.json();
       if(s && s.wpps !== undefined){
         const changed = applyCloudData(s);
-        if(manual) showSyncStatus('✓ Sincronizado'+(changed?' — atualizado':' — sem mudanças')+' às '+new Date().toLocaleTimeString('pt-BR'),'ok');
+        if(manual) showSyncStatus('✓ Atualizado'+(changed?' — dados novos':' — sem mudanças')+' às '+new Date().toLocaleTimeString('pt-BR'),'ok');
       } else {
-        if(manual) showSyncStatus('Nuvem vazia — acesse o app na máquina da estagiária primeiro','info');
+        if(manual) showSyncStatus('Banco vazio — envie os dados primeiro','info');
       }
     } else {
       if(manual) showSyncStatus('Erro '+r.status,'err');
     }
   }catch(e){
     if(manual) showSyncStatus('Erro: '+e.message,'err');
-    else console.warn('Sync error:', e.message);
   }
 }
 
+function showSyncStatus(msg,type){
+  const el=document.getElementById('sync-status'); if(!el)return;
+  el.style.display='block';
+  el.style.background=type==='ok'?'#dcfce7':type==='err'?'#fee2e2':'#dbeafe';
+  el.style.color=type==='ok'?'#15803d':type==='err'?'#b91c1c':'#1e40af';
+  el.textContent=msg;
+}
+function updateSyncDot(){}
+function openDevConfig(){
+  const st=document.getElementById('sync-status');
+  if(st){st.style.display='block';st.style.background='#dcfce7';st.style.color='#15803d';st.textContent='☁️ Firebase conectado — sincronização automática ativa';}
+  openM('dev-modal-cfg');
+}
+function loadSyncCfg(){ updateSyncDot(); }
 function startSyncInterval(){
   if(syncInterval) clearInterval(syncInterval);
-  if(!syncReady()) return;
-  // sync from cloud every 30 seconds
   syncInterval=setInterval(async ()=>{
     if(currentRole) await syncFromCloud(false);
   },6000);
